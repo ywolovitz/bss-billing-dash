@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Run",
-  "last_updated": "2026-06-25T12:54:00.765Z",
+  "last_updated": "2026-06-25T13:06:52.357Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -66,12 +66,12 @@
       "mappings": {
         "monthly_product_codes": {
           "status": "done",
-          "time": "14:46",
+          "time": "14:41",
           "notes": ""
         },
         "start_product_codes": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "14:42",
           "notes": ""
         },
         "isps": {
@@ -151,12 +151,12 @@
       "mappings": {
         "monthly_product_codes": {
           "status": "done",
-          "time": "14:11",
+          "time": "14:15",
           "notes": ""
         },
         "start_product_codes": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "14:15",
           "notes": ""
         },
         "isps": {
