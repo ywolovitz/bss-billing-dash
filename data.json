@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Run",
-  "last_updated": "2026-06-25T12:47:10.392Z",
+  "last_updated": "2026-06-25T12:54:00.765Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -40,8 +40,8 @@
           "notes": ""
         },
         "clean_file_dropbox": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "14:53",
           "notes": ""
         }
       },
@@ -120,8 +120,8 @@
           "notes": ""
         },
         "clean_file_dropbox": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "14:52",
           "notes": ""
         }
       },
