@@ -1,13 +1,29 @@
 {
-  "run_label": "June 2026 Month-End Run",
-  "last_updated": "2026-06-25T09:00:00",
+  "run_label": "June 2026 Month-End Run YAY",
+  "last_updated": "2026-06-25T10:53:00.982Z",
   "projects": {
     "core_gpon": {
       "steps": {
-        "nms_received":        { "status": "done",    "time": "06:42", "notes": "" },
-        "monthly_checks_sent": { "status": "done",    "time": "08:15", "notes": "" },
-        "start_checks_sent":   { "status": "issue",   "time": "09:30", "notes": "Start missing count is high — escalated to Zero One for review." },
-        "data_checks_sent":    { "status": "pending", "time": "",      "notes": "" }
+        "nms_received": {
+          "status": "done",
+          "time": "06:42",
+          "notes": ""
+        },
+        "monthly_checks_sent": {
+          "status": "done",
+          "time": "08:15",
+          "notes": ""
+        },
+        "start_checks_sent": {
+          "status": "issue",
+          "time": "09:30",
+          "notes": "Start missing count is high — escalated to Zero One for review."
+        },
+        "data_checks_sent": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        }
       },
       "quantities": {
         "monthly": {
@@ -28,18 +44,46 @@
         }
       },
       "mappings": {
-        "product_codes": { "status": "pending", "time": "",      "notes": "" },
-        "isps":            { "status": "done",    "time": "07:20", "notes": "" },
-        "regions":         { "status": "done",    "time": "07:05", "notes": "" }
+        "product_codes": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "isps": {
+          "status": "done",
+          "time": "07:20",
+          "notes": ""
+        },
+        "regions": {
+          "status": "done",
+          "time": "07:05",
+          "notes": ""
+        }
       },
       "notes": ""
     },
     "core_ae": {
       "steps": {
-        "nms_received":        { "status": "done",    "time": "06:55", "notes": "" },
-        "monthly_checks_sent": { "status": "pending", "time": "",      "notes": "" },
-        "start_checks_sent":   { "status": "pending", "time": "",      "notes": "" },
-        "data_checks_sent":    { "status": "pending", "time": "",      "notes": "" }
+        "nms_received": {
+          "status": "done",
+          "time": "06:55",
+          "notes": ""
+        },
+        "monthly_checks_sent": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "start_checks_sent": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "data_checks_sent": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        }
       },
       "quantities": {
         "monthly": {
@@ -60,9 +104,21 @@
         }
       },
       "mappings": {
-        "product_codes": { "status": "pending", "time": "", "notes": "" },
-        "isps":            { "status": "pending", "time": "", "notes": "" },
-        "regions":         { "status": "pending", "time": "", "notes": "" }
+        "product_codes": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "isps": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "regions": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        }
       },
       "notes": ""
     }
