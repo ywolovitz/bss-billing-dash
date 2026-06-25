@@ -44,6 +44,67 @@
     background: var(--navy); color: #d9f7e3; white-space: pre;
   }
   .saved-msg { font-size: 0.82rem; color: var(--green); font-weight: 600; }
+
+  details.config-project,
+  details.config-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  details.config-project { margin-bottom: 18px; }
+  details.config-project > summary,
+  details.config-section > summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 700;
+    font-family: "Sora", sans-serif;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  details.config-project > summary::-webkit-details-marker,
+  details.config-section > summary::-webkit-details-marker { display: none; }
+  details.config-project > summary::before,
+  details.config-section > summary::before {
+    content: "\25B8";
+    color: var(--pink-dark);
+    font-size: 0.75rem;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+  details.config-project[open] > summary::before,
+  details.config-section[open] > summary::before { transform: rotate(90deg); }
+  details.config-project > summary {
+    font-size: 0.95rem;
+    background: var(--navy);
+    color: #fff;
+  }
+  details.config-project > summary::before { color: var(--pink); }
+  details.config-section > summary {
+    font-size: 0.82rem;
+    background: var(--pink-tint);
+    color: var(--pink-dark);
+    border-bottom: 1px solid transparent;
+  }
+  details.config-section[open] > summary {
+    border-bottom-color: var(--border);
+  }
+  .config-project-body,
+  .config-section-body {
+    padding: 14px 18px 18px;
+  }
+  details.config-project-undefined {
+    opacity: 0.65;
+    background: var(--bg);
+  }
+  details.config-project-undefined > summary {
+    background: var(--navy-light);
+  }
 </style>
 </head>
 <body>
@@ -138,7 +199,7 @@ function buildStepFields(prefix, stepDef, data) {
 
 function buildQuantityFields(prefix, label, fields, values) {
   const wrap = el("div");
-  wrap.innerHTML = `<div class="sub-heading">${label}</div>`;
+  wrap.innerHTML = `<div class="sub-heading" style="margin-top:0">${label}</div>`;
   const grid = el("div", "checks-grid");
   fields.forEach(f => {
     const v = (values && values[f.key] !== undefined) ? values[f.key] : 0;
@@ -153,38 +214,58 @@ function buildQuantityFields(prefix, label, fields, values) {
   return wrap;
 }
 
+function configSection(title, buildBody) {
+  const details = el("details", "config-section");
+  details.appendChild(el("summary", null, title));
+  const body = el("div", "config-section-body");
+  buildBody(body);
+  details.appendChild(body);
+  return details;
+}
+
 function buildDefinedProjectForm(def, data) {
-  const card = el("div", "config-card");
-  card.appendChild(el("h3", null, def.label));
+  const project = el("details", "config-project");
+  if (def.id === "core_gpon") project.open = true;
+  project.appendChild(el("summary", null, def.label));
 
-  card.appendChild(el("div", "sub-heading", "Checklist steps"));
-  STEP_DEFS.forEach(step => {
-    const stepData = data.steps?.[step.id] || emptyStep();
-    card.appendChild(buildStepFields(`${def.id}_step_${step.id}`, step, stepData));
-  });
+  const inner = el("div", "config-project-body");
 
-  card.appendChild(el("div", "sub-heading", "Correction quantities"));
-  card.appendChild(buildQuantityFields(`${def.id}_qty_monthly`, "Monthly Orders", ORDER_QUANTITY_FIELDS, data.quantities?.monthly));
-  card.appendChild(buildQuantityFields(`${def.id}_qty_start`, "Start Orders", ORDER_QUANTITY_FIELDS, data.quantities?.start));
-  card.appendChild(buildQuantityFields(`${def.id}_qty_data`, "Data", DATA_QUANTITY_FIELDS, data.quantities?.data));
+  inner.appendChild(configSection("Checklist steps", body => {
+    STEP_DEFS.forEach(step => {
+      const stepData = data.steps?.[step.id] || emptyStep();
+      body.appendChild(buildStepFields(`${def.id}_step_${step.id}`, step, stepData));
+    });
+  }));
 
-  card.appendChild(el("div", "sub-heading", "Dimension mapping"));
-  MAPPING_DEFS.forEach(mapping => {
-    const mapData = data.mappings?.[mapping.id] || emptyStep();
-    card.appendChild(buildStepFields(`${def.id}_map_${mapping.id}`, mapping, mapData));
-  });
+  inner.appendChild(configSection("Correction quantities", body => {
+    body.appendChild(buildQuantityFields(`${def.id}_qty_monthly`, "Monthly Orders", ORDER_QUANTITY_FIELDS, data.quantities?.monthly));
+    body.appendChild(buildQuantityFields(`${def.id}_qty_start`, "Start Orders", ORDER_QUANTITY_FIELDS, data.quantities?.start));
+    body.appendChild(buildQuantityFields(`${def.id}_qty_data`, "Data", DATA_QUANTITY_FIELDS, data.quantities?.data));
+  }));
 
-  card.appendChild(el("div", "sub-heading", "Final step"));
-  FINAL_STEP_DEFS.forEach(step => {
-    const stepData = data.steps?.[step.id] || emptyStep();
-    card.appendChild(buildStepFields(`${def.id}_step_${step.id}`, step, stepData));
-  });
+  inner.appendChild(configSection("Dimension mapping", body => {
+    MAPPING_DEFS.forEach(mapping => {
+      const mapData = data.mappings?.[mapping.id] || emptyStep();
+      body.appendChild(buildStepFields(`${def.id}_map_${mapping.id}`, mapping, mapData));
+    });
+  }));
 
-  const notesField = el("div", "field notes-field");
-  notesField.innerHTML = `<label for="${def.id}_notes">Project notes</label><textarea id="${def.id}_notes">${(data.notes||"")}</textarea>`;
-  card.appendChild(notesField);
+  inner.appendChild(configSection("Final step", body => {
+    FINAL_STEP_DEFS.forEach(step => {
+      const stepData = data.steps?.[step.id] || emptyStep();
+      body.appendChild(buildStepFields(`${def.id}_step_${step.id}`, step, stepData));
+    });
+  }));
 
-  return card;
+  inner.appendChild(configSection("Project notes", body => {
+    const notesField = el("div", "field notes-field");
+    notesField.style.marginTop = "0";
+    notesField.innerHTML = `<label for="${def.id}_notes">Notes</label><textarea id="${def.id}_notes">${(data.notes||"")}</textarea>`;
+    body.appendChild(notesField);
+  }));
+
+  project.appendChild(inner);
+  return project;
 }
 
 function buildForm(projects) {
@@ -192,12 +273,15 @@ function buildForm(projects) {
   area.innerHTML = "";
 
   PROJECT_DEFS.forEach(def => {
-    area.appendChild(el("div", "group-heading", def.label));
-
     if (!def.defined) {
-      const card = el("div", "config-card");
-      card.innerHTML = `<p class="placeholder-notice">This sub-project is not yet defined — no fields to edit. Once the process is confirmed, it will be added to <code>items.js</code>.</p>`;
-      area.appendChild(card);
+      const project = el("details", "config-project config-project-undefined");
+      project.innerHTML = `
+        <summary>${def.label}</summary>
+        <div class="config-project-body">
+          <p class="placeholder-notice">This sub-project is not yet defined — no fields to edit. Once the process is confirmed, it will be added to <code>items.js</code>.</p>
+        </div>
+      `;
+      area.appendChild(project);
       return;
     }
 

@@ -39,9 +39,10 @@ const DATA_QUANTITY_FIELDS = [
 ];
 
 const MAPPING_DEFS = [
-  { id: "product_codes", label: "Product Code mapping done" },
-  { id: "isps",          label: "ISP Mapping done" },
-  { id: "regions",       label: "Region Mapping done" },
+  { id: "monthly_product_codes", label: "Monthly Product Code mapping done" },
+  { id: "start_product_codes",   label: "Start Product Code mapping done" },
+  { id: "isps",                  label: "ISP Mapping done" },
+  { id: "regions",               label: "Region Mapping done" },
 ];
 
 const PROJECT_DEFS = [
