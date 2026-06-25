@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Run",
-  "last_updated": "2026-06-25T11:21:57.451Z",
+  "last_updated": "2026-06-25T11:39:06.621Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -95,13 +95,13 @@
           "notes": ""
         },
         "start_checks_sent": {
-          "status": "pending",
-          "time": "",
-          "notes": ""
+          "status": "done",
+          "time": "13:30",
+          "notes": "8 Downgrade orders - same as GPON"
         },
         "data_checks_sent": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "13:38",
           "notes": ""
         },
         "monthly_fixes_done": {
@@ -134,12 +134,12 @@
         },
         "start": {
           "duplicates": 0,
-          "missing": 0,
-          "extras": 0,
-          "value_corrections": 0
+          "missing": 11,
+          "extras": 7,
+          "value_corrections": 175
         },
         "data": {
-          "customer_names": 0,
+          "customer_names": 1473,
           "object_numbers": 0
         }
       },
