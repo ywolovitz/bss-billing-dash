@@ -2,12 +2,29 @@
 // Edit labels/fields here if the process changes — both index.html and
 // config.html read from this file. Actual VALUES live in data.json.
 
-const STEP_DEFS = [
+const INTAKE_STEP_DEFS = [
   { id: "nms_received",         label: "NMS File Received" },
   { id: "monthly_checks_sent",  label: "Initial checks for 'Monthly' orders sent to Zero One" },
   { id: "start_checks_sent",    label: "Initial checks for 'Start' orders sent to Zero One" },
   { id: "data_checks_sent",     label: "Initial checks for 'Data' sent to Zero One" },
 ];
+
+const FIX_STEP_DEFS = [
+  { id: "monthly_fixes_done", label: "Monthly fixes completed by Zero One" },
+  { id: "start_fixes_done",   label: "Start fixes completed by Zero One" },
+  { id: "data_fixes_done",    label: "Data fixes completed by Zero One" },
+];
+
+const FINAL_STEP_DEFS = [
+  { id: "clean_file_dropbox", label: "Clean File uploaded to Drop Box" },
+];
+
+// Intake + fixes — shown together in the config "Checklist steps" section
+const STEP_DEFS = [...INTAKE_STEP_DEFS, ...FIX_STEP_DEFS];
+
+function allStepDefs() {
+  return [...INTAKE_STEP_DEFS, ...FIX_STEP_DEFS, ...FINAL_STEP_DEFS];
+}
 
 const ORDER_QUANTITY_FIELDS = [
   { key: "duplicates",         label: "Duplicates" },
@@ -63,7 +80,7 @@ function emptyStep() {
 
 function emptyDefinedProject() {
   const steps = {};
-  STEP_DEFS.forEach(s => { steps[s.id] = emptyStep(); });
+  allStepDefs().forEach(s => { steps[s.id] = emptyStep(); });
 
   const mappings = {};
   MAPPING_DEFS.forEach(m => { mappings[m.id] = emptyStep(); });
@@ -80,7 +97,7 @@ function emptyDefinedProject() {
 function projectTrackables(projectDef) {
   if (!projectDef.defined) return [];
   return [
-    ...STEP_DEFS.map(s => ({ kind: "step", id: s.id })),
+    ...allStepDefs().map(s => ({ kind: "step", id: s.id })),
     ...MAPPING_DEFS.map(m => ({ kind: "mapping", id: m.id })),
   ];
 }
@@ -154,10 +171,12 @@ function projectBarTone(projectDef, projectData) {
   return "bar-pending";
 }
 
-// All checklist rows (steps + mappings)
+// Checklist display order: intake → fixes → mappings → final step
 const CHECKLIST_ROWS = [
-  ...STEP_DEFS.map(s => ({ kind: "step", id: s.id, label: s.label })),
+  ...INTAKE_STEP_DEFS.map(s => ({ kind: "step", id: s.id, label: s.label })),
+  ...FIX_STEP_DEFS.map(s => ({ kind: "step", id: s.id, label: s.label })),
   ...MAPPING_DEFS.map(m => ({ kind: "mapping", id: m.id, label: m.label })),
+  ...FINAL_STEP_DEFS.map(s => ({ kind: "step", id: s.id, label: s.label })),
 ];
 
 const QUANTITY_GROUPS = [

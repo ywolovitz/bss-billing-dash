@@ -23,6 +23,26 @@
           "status": "pending",
           "time": "",
           "notes": ""
+        },
+        "monthly_fixes_done": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "start_fixes_done": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "data_fixes_done": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "clean_file_dropbox": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
         }
       },
       "quantities": {
@@ -80,6 +100,26 @@
           "notes": ""
         },
         "data_checks_sent": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "monthly_fixes_done": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "start_fixes_done": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "data_fixes_done": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "clean_file_dropbox": {
           "status": "pending",
           "time": "",
           "notes": ""
