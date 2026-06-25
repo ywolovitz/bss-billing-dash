@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Run",
-  "last_updated": "2026-06-25T11:39:06.621Z",
+  "last_updated": "2026-06-25T12:07:23.340Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -105,13 +105,13 @@
           "notes": ""
         },
         "monthly_fixes_done": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "13:41",
           "notes": ""
         },
         "start_fixes_done": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "13:59",
           "notes": ""
         },
         "data_fixes_done": {
@@ -150,13 +150,13 @@
           "notes": ""
         },
         "isps": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "14:05",
           "notes": ""
         },
         "regions": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "14:05",
           "notes": ""
         }
       },
