@@ -1,42 +1,42 @@
 {
-  "run_label": "June 2026 Month-End Run YAY",
-  "last_updated": "2026-06-25T10:53:00.982Z",
+  "run_label": "June 2026 Month-End Run",
+  "last_updated": "2026-06-25T11:05:52.136Z",
   "projects": {
     "core_gpon": {
       "steps": {
         "nms_received": {
           "status": "done",
-          "time": "06:42",
+          "time": "04:17",
           "notes": ""
         },
         "monthly_checks_sent": {
           "status": "done",
-          "time": "08:15",
+          "time": "10:55",
           "notes": ""
         },
         "start_checks_sent": {
-          "status": "issue",
-          "time": "09:30",
-          "notes": "Start missing count is high — escalated to Zero One for review."
+          "status": "done",
+          "time": "11:02",
+          "notes": "New Downgrade Product in NMS data for 3 records."
         },
         "data_checks_sent": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "11:11",
           "notes": ""
         },
         "monthly_fixes_done": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "11:53",
           "notes": ""
         },
         "start_fixes_done": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "11:58",
           "notes": ""
         },
         "data_fixes_done": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "12:05",
           "notes": ""
         },
         "clean_file_dropbox": {
@@ -70,12 +70,12 @@
           "notes": ""
         },
         "isps": {
-          "status": "done",
+          "status": "pending",
           "time": "07:20",
           "notes": ""
         },
         "regions": {
-          "status": "done",
+          "status": "pending",
           "time": "07:05",
           "notes": ""
         }
@@ -86,7 +86,7 @@
       "steps": {
         "nms_received": {
           "status": "done",
-          "time": "06:55",
+          "time": "01:04",
           "notes": ""
         },
         "monthly_checks_sent": {
