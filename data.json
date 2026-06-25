@@ -64,9 +64,14 @@
         }
       },
       "mappings": {
-        "product_codes": {
+        "monthly_product_codes": {
           "status": "done",
           "time": "14:46",
+          "notes": ""
+        },
+        "start_product_codes": {
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "isps": {
@@ -144,9 +149,14 @@
         }
       },
       "mappings": {
-        "product_codes": {
+        "monthly_product_codes": {
           "status": "done",
           "time": "14:11",
+          "notes": ""
+        },
+        "start_product_codes": {
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "isps": {
