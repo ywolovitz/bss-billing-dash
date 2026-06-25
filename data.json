@@ -1,0 +1,70 @@
+{
+  "run_label": "June 2026 Month-End Run",
+  "last_updated": "2026-06-25T09:00:00",
+  "projects": {
+    "core_gpon": {
+      "steps": {
+        "nms_received":        { "status": "done",    "time": "06:42", "notes": "" },
+        "monthly_checks_sent": { "status": "done",    "time": "08:15", "notes": "" },
+        "start_checks_sent":   { "status": "issue",   "time": "09:30", "notes": "Start missing count is high — escalated to Zero One for review." },
+        "data_checks_sent":    { "status": "pending", "time": "",      "notes": "" }
+      },
+      "quantities": {
+        "monthly": {
+          "duplicates": 2,
+          "missing": 347,
+          "extras": 1417,
+          "value_corrections": 121
+        },
+        "start": {
+          "duplicates": 0,
+          "missing": 3180,
+          "extras": 0,
+          "value_corrections": 3
+        },
+        "data": {
+          "customer_names": 1775,
+          "object_numbers": 3489
+        }
+      },
+      "mappings": {
+        "product_codes": { "status": "pending", "time": "",      "notes": "" },
+        "isps":            { "status": "done",    "time": "07:20", "notes": "" },
+        "regions":         { "status": "done",    "time": "07:05", "notes": "" }
+      },
+      "notes": ""
+    },
+    "core_ae": {
+      "steps": {
+        "nms_received":        { "status": "done",    "time": "06:55", "notes": "" },
+        "monthly_checks_sent": { "status": "pending", "time": "",      "notes": "" },
+        "start_checks_sent":   { "status": "pending", "time": "",      "notes": "" },
+        "data_checks_sent":    { "status": "pending", "time": "",      "notes": "" }
+      },
+      "quantities": {
+        "monthly": {
+          "duplicates": 0,
+          "missing": 0,
+          "extras": 0,
+          "value_corrections": 0
+        },
+        "start": {
+          "duplicates": 0,
+          "missing": 0,
+          "extras": 0,
+          "value_corrections": 0
+        },
+        "data": {
+          "customer_names": 0,
+          "object_numbers": 0
+        }
+      },
+      "mappings": {
+        "product_codes": { "status": "pending", "time": "", "notes": "" },
+        "isps":            { "status": "pending", "time": "", "notes": "" },
+        "regions":         { "status": "pending", "time": "", "notes": "" }
+      },
+      "notes": ""
+    }
+  }
+}

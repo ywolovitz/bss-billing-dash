@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Billing Dashboard — Configuration Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+  .config-card { background: var(--card); border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; margin-bottom: 18px; }
+  .config-card h3 { font-size: 0.95rem; margin-bottom: 12px; }
+  .field-row { display:flex; flex-wrap:wrap; gap: 12px; margin-bottom: 10px; align-items: flex-end; }
+  .field { display:flex; flex-direction:column; gap:4px; font-size: 0.82rem; flex: 1 1 140px; }
+  .field label { color: var(--muted); font-weight: 600; }
+  .field input, .field select, .field textarea {
+    font-family: inherit; font-size: 0.88rem; padding: 7px 9px;
+    border: 1px solid var(--border); border-radius: 8px; background:#fff; color: var(--text);
+  }
+  .field textarea { resize: vertical; min-height: 50px; flex-basis: 100%; }
+  .field.notes-field { flex-basis: 100%; }
+  .checks-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:10px; margin-bottom: 10px;}
+  .sub-heading { font-size: 0.82rem; font-weight: 700; color: var(--text); margin: 16px 0 8px; }
+  .sub-heading:first-of-type { margin-top: 0; }
+  .step-block { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: var(--bg); }
+  .step-block .step-name { font-size: 0.82rem; font-weight: 600; margin-bottom: 8px; color: var(--navy-light); }
+  .group-heading { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--pink-dark); font-weight:700; margin: 28px 0 10px; }
+  .group-heading:first-of-type { margin-top: 0; }
+  .placeholder-notice { color: var(--muted); font-size: 0.88rem; font-style: italic; }
+  .actions { display:flex; gap:10px; flex-wrap: wrap; margin: 18px 0; }
+  button.btn {
+    font-family: inherit; font-weight: 700; font-size: 0.88rem; padding: 11px 18px;
+    border-radius: 9px; border: none; cursor: pointer;
+  }
+  .btn-primary { background: var(--pink); color: #fff; }
+  .btn-primary:hover { background: var(--pink-dark); }
+  .btn-secondary { background: var(--navy-light); color: #fff; }
+  .btn-secondary:hover { background: var(--navy); }
+  .notice { background: var(--pink-tint); border:1px solid var(--pink); color: var(--pink-dark); padding: 14px 16px; border-radius: var(--radius); font-size: 0.85rem; margin-bottom: 22px; line-height:1.5; }
+  textarea.json-output {
+    width: 100%; min-height: 260px; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--navy); color: #d9f7e3; white-space: pre;
+  }
+  .saved-msg { font-size: 0.82rem; color: var(--green); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-row">
+    <div>
+      <span class="eyebrow">Internal — Not Public-Facing</span>
+      <h1>Billing Dashboard Configuration Panel</h1>
+      <div class="meta">Edit statuses, times, quantities and notes per sub-project, then publish to update the stakeholder dashboard.</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="notice">
+    <strong>This page is not linked anywhere on the dashboard</strong> — only people with this URL can reach it. It does not require a login, so treat the link itself as the access control and don't share it outside the team.<br><br>
+    Editing here updates a local draft in this browser only. To actually update what stakeholders see on <code>index.html</code>, click <strong>Generate updated data.json</strong> below, then download (or copy) the file and replace <code>data.json</code> in the GitHub repo and push — that's what publishes the change.
+  </div>
+
+  <div class="config-card">
+    <h3>Run details</h3>
+    <div class="field-row">
+      <div class="field" style="flex-basis:280px;">
+        <label for="runLabel">Run label</label>
+        <input type="text" id="runLabel" placeholder="e.g. June 2026 Month-End Run" />
+      </div>
+    </div>
+  </div>
+
+  <div id="formArea"></div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="generateBtn">Generate updated data.json</button>
+    <button class="btn btn-secondary" id="saveDraftBtn">Save draft in this browser</button>
+    <button class="btn btn-secondary" id="resetBtn">Reload from data.json</button>
+    <span class="saved-msg" id="savedMsg"></span>
+  </div>
+
+  <div class="config-card" id="outputCard" style="display:none;">
+    <h3>Updated data.json — download or copy this, then commit it to your repo</h3>
+    <textarea class="json-output" id="jsonOutput" readonly></textarea>
+    <div class="actions">
+      <button class="btn btn-primary" id="downloadBtn">Download data.json</button>
+      <button class="btn btn-secondary" id="copyBtn">Copy to clipboard</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="items.js"></script>
+<script>
+const $ = (sel, root=document) => root.querySelector(sel);
+const el = (tag, cls, html) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+};
+const DRAFT_KEY = "mebr_dashboard_draft_v2";
+
+let currentData = null;
+
+function statusSelect(id, value) {
+  const options = STATUS_OPTIONS.map(o =>
+    `<option value="${o.value}"${o.value === value ? " selected" : ""}>${o.label}</option>`
+  ).join("");
+  return `<select id="${id}">${options}</select>`;
+}
+
+function buildStepFields(prefix, stepDef, data) {
+  const block = el("div", "step-block");
+  block.innerHTML = `<div class="step-name">${stepDef.label}</div>
+    <div class="field-row">
+      <div class="field">
+        <label for="${prefix}_status">Status</label>
+        ${statusSelect(`${prefix}_status`, data.status || "pending")}
+      </div>
+      <div class="field">
+        <label for="${prefix}_time">Time (HH:MM)</label>
+        <input type="text" id="${prefix}_time" placeholder="e.g. 14:32" value="${(data.time||"").replace(/"/g,'&quot;')}" />
+      </div>
+    </div>
+    <div class="field notes-field">
+      <label for="${prefix}_notes">Notes</label>
+      <textarea id="${prefix}_notes">${(data.notes||"")}</textarea>
+    </div>
+  `;
+  return block;
+}
+
+function buildQuantityFields(prefix, label, fields, values) {
+  const wrap = el("div");
+  wrap.innerHTML = `<div class="sub-heading">${label}</div>`;
+  const grid = el("div", "checks-grid");
+  fields.forEach(f => {
+    const v = (values && values[f.key] !== undefined) ? values[f.key] : 0;
+    grid.innerHTML += `
+      <div class="field">
+        <label for="${prefix}_${f.key}">${f.label}</label>
+        <input type="number" id="${prefix}_${f.key}" value="${v}" />
+      </div>
+    `;
+  });
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function buildDefinedProjectForm(def, data) {
+  const card = el("div", "config-card");
+  card.appendChild(el("h3", null, def.label));
+
+  card.appendChild(el("div", "sub-heading", "Checklist steps"));
+  STEP_DEFS.forEach(step => {
+    const stepData = data.steps?.[step.id] || emptyStep();
+    card.appendChild(buildStepFields(`${def.id}_step_${step.id}`, step, stepData));
+  });
+
+  card.appendChild(el("div", "sub-heading", "Correction quantities"));
+  card.appendChild(buildQuantityFields(`${def.id}_qty_monthly`, "Monthly Orders", ORDER_QUANTITY_FIELDS, data.quantities?.monthly));
+  card.appendChild(buildQuantityFields(`${def.id}_qty_start`, "Start Orders", ORDER_QUANTITY_FIELDS, data.quantities?.start));
+  card.appendChild(buildQuantityFields(`${def.id}_qty_data`, "Data", DATA_QUANTITY_FIELDS, data.quantities?.data));
+
+  card.appendChild(el("div", "sub-heading", "Dimension mapping"));
+  MAPPING_DEFS.forEach(mapping => {
+    const mapData = data.mappings?.[mapping.id] || emptyStep();
+    card.appendChild(buildStepFields(`${def.id}_map_${mapping.id}`, mapping, mapData));
+  });
+
+  const notesField = el("div", "field notes-field");
+  notesField.innerHTML = `<label for="${def.id}_notes">Project notes</label><textarea id="${def.id}_notes">${(data.notes||"")}</textarea>`;
+  card.appendChild(notesField);
+
+  return card;
+}
+
+function buildForm(projects) {
+  const area = $("#formArea");
+  area.innerHTML = "";
+
+  PROJECT_DEFS.forEach(def => {
+    area.appendChild(el("div", "group-heading", def.label));
+
+    if (!def.defined) {
+      const card = el("div", "config-card");
+      card.innerHTML = `<p class="placeholder-notice">This sub-project is not yet defined — no fields to edit. Once the process is confirmed, it will be added to <code>items.js</code>.</p>`;
+      area.appendChild(card);
+      return;
+    }
+
+    const data = projects[def.id] || emptyDefinedProject();
+    area.appendChild(buildDefinedProjectForm(def, data));
+  });
+}
+
+function collectQuantityGroup(prefix, fields) {
+  const values = {};
+  fields.forEach(f => {
+    values[f.key] = Number($(`#${prefix}_${f.key}`).value) || 0;
+  });
+  return values;
+}
+
+function collectDefinedProject(def) {
+  const steps = {};
+  STEP_DEFS.forEach(step => {
+    const p = `${def.id}_step_${step.id}`;
+    steps[step.id] = {
+      status: $(`#${p}_status`).value,
+      time: $(`#${p}_time`).value,
+      notes: $(`#${p}_notes`).value,
+    };
+  });
+
+  const mappings = {};
+  MAPPING_DEFS.forEach(mapping => {
+    const p = `${def.id}_map_${mapping.id}`;
+    mappings[mapping.id] = {
+      status: $(`#${p}_status`).value,
+      time: $(`#${p}_time`).value,
+      notes: $(`#${p}_notes`).value,
+    };
+  });
+
+  return {
+    steps,
+    quantities: {
+      monthly: collectQuantityGroup(`${def.id}_qty_monthly`, ORDER_QUANTITY_FIELDS),
+      start:   collectQuantityGroup(`${def.id}_qty_start`, ORDER_QUANTITY_FIELDS),
+      data:    collectQuantityGroup(`${def.id}_qty_data`, DATA_QUANTITY_FIELDS),
+    },
+    mappings,
+    notes: $(`#${def.id}_notes`).value,
+  };
+}
+
+function collectFormData() {
+  const projects = {};
+  PROJECT_DEFS.forEach(def => {
+    if (def.defined) {
+      projects[def.id] = collectDefinedProject(def);
+    }
+  });
+  return {
+    run_label: $("#runLabel").value,
+    last_updated: new Date().toISOString(),
+    projects,
+  };
+}
+
+function applyData(data) {
+  currentData = data;
+  $("#runLabel").value = data.run_label || "";
+  buildForm(data.projects || {});
+}
+
+async function loadFromFile() {
+  const res = await fetch("data.json?t=" + Date.now());
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return await res.json();
+}
+
+function loadDraftIfAny() {
+  const raw = localStorage.getItem(DRAFT_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+async function init() {
+  let data;
+  try {
+    data = await loadFromFile();
+  } catch (err) {
+    $("#formArea").innerHTML = `<div class="load-error" style="background:var(--red-tint);color:var(--red);border:1px solid var(--red);border-radius:var(--radius);padding:14px;">Could not load data.json: ${err.message}</div>`;
+    return;
+  }
+  const draft = loadDraftIfAny();
+  if (draft) {
+    const useDraft = confirm("A saved draft was found in this browser. Load the draft instead of data.json?");
+    if (useDraft) data = draft;
+  }
+  applyData(data);
+}
+
+$("#generateBtn").addEventListener("click", () => {
+  const data = collectFormData();
+  currentData = data;
+  const json = JSON.stringify(data, null, 2);
+  $("#jsonOutput").value = json;
+  $("#outputCard").style.display = "block";
+  $("#outputCard").scrollIntoView({ behavior: "smooth" });
+});
+
+$("#saveDraftBtn").addEventListener("click", () => {
+  const data = collectFormData();
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+  $("#savedMsg").textContent = "Draft saved in this browser at " + new Date().toLocaleTimeString();
+  setTimeout(() => $("#savedMsg").textContent = "", 4000);
+});
+
+$("#resetBtn").addEventListener("click", async () => {
+  try {
+    const data = await loadFromFile();
+    applyData(data);
+    $("#outputCard").style.display = "none";
+    $("#savedMsg").textContent = "Reloaded from data.json";
+    setTimeout(() => $("#savedMsg").textContent = "", 4000);
+  } catch (err) {
+    alert("Could not reload data.json: " + err.message);
+  }
+});
+
+$("#downloadBtn").addEventListener("click", () => {
+  const blob = new Blob([$("#jsonOutput").value], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "data.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+$("#copyBtn").addEventListener("click", async () => {
+  await navigator.clipboard.writeText($("#jsonOutput").value);
+  $("#savedMsg").textContent = "Copied to clipboard";
+  setTimeout(() => $("#savedMsg").textContent = "", 4000);
+});
+
+init();
+</script>
+
+</body>
+</html>

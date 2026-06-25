@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Month-End Billing Run — Status Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-row">
+      <div>
+        <span class="eyebrow">Billing Operations</span>
+        <h1>Month-End Billing Run — Status Dashboard</h1>
+        <div class="meta">Tracking intake, initial checks sent to Zero One, correction quantities and dimension mapping across billing sub-projects.</div>
+      </div>
+    </div>
+    <div class="topbar-run-row">
+      <div class="run-info">
+        <div class="run-label" id="runLabel">Loading run…</div>
+        <div class="run-updated" id="runUpdated"></div>
+      </div>
+      <button type="button" class="btn-export" id="exportPdfBtn" title="Download dashboard as PDF">Export PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div id="errorBox"></div>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="project-progress-row" id="projectProgress"></div>
+
+  <div class="checklist-wrap" id="checklistWrap">
+    <div class="section-title"><span class="swatch"></span>Checklist by sub-project</div>
+    <div class="checklist-projects" id="checklistProjects"></div>
+  </div>
+
+</div>
+
+<footer class="foot">Values, timestamps and statuses are set on the configuration page and published via <code>data.json</code>.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="items.js"></script>
+<script>
+const $ = (sel, root=document) => root.querySelector(sel);
+const el = (tag, cls, html) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+};
+
+function escapeHtml(str) {
+  return (str || "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function badge(status) {
+  const m = statusMeta(status);
+  return `<span class="badge ${m.className}">${m.emoji} ${m.label}</span>`;
+}
+
+function rowStatusCell(projectData, row) {
+  const bucket = row.kind === "step" ? projectData.steps : projectData.mappings;
+  const item = bucket?.[row.id] || emptyStep();
+  return badge(item.status);
+}
+
+function noteBadge(title) {
+  const tip = title ? ` title="${escapeHtml(title)}"` : "";
+  return `<span class="badge badge-note"${tip}>📝 Note</span>`;
+}
+
+function rowNotesCell(item) {
+  if (item.notes && item.notes.trim()) {
+    return `<div class="note-cell">${noteBadge(item.notes)}<span class="row-note">${escapeHtml(item.notes)}</span></div>`;
+  }
+  return `<span class="muted">—</span>`;
+}
+
+function projectHasNotes(data) {
+  if ((data.notes || "").trim()) return true;
+  const buckets = [data.steps, data.mappings];
+  return buckets.some(bucket =>
+    bucket && Object.values(bucket).some(item => (item.notes || "").trim())
+  );
+}
+
+function buildSummary(projects) {
+  const { done, pending, issue, na, pct } = overallProgress(projects);
+  $("#summary").innerHTML = `
+    <div class="stat done"><div class="num">${done}</div><div class="lbl">Done</div></div>
+    <div class="stat pending"><div class="num">${pending}</div><div class="lbl">Pending</div></div>
+    <div class="stat issue"><div class="num">${issue}</div><div class="lbl">Issues</div></div>
+    <div class="stat na"><div class="num">${na}</div><div class="lbl">N/A</div></div>
+    <div class="stat progress">
+      <div class="lbl">Overall completion — ${pct}%</div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+  `;
+}
+
+function buildProjectProgress(projects) {
+  const row = $("#projectProgress");
+  row.innerHTML = "";
+  PROJECT_DEFS.forEach(def => {
+    const data = projects[def.id];
+    const { done, total, pct } = projectProgress(def, data);
+    const barTone = projectBarTone(def, data);
+    const tile = el("div", "project-progress-tile" + (def.defined ? "" : " undefined"));
+    tile.innerHTML = `
+      <div class="ppt-head">
+        <span class="ppt-label">${escapeHtml(def.label)}</span>
+        <span class="ppt-pct ${barTone}">${def.defined ? pct + "%" : "TBD"}</span>
+      </div>
+      <div class="progress-bar-track"><div class="progress-bar-fill ${barTone}" style="width:${def.defined ? pct : 0}%"></div></div>
+      <div class="ppt-sub">${def.defined ? `${done} of ${total} steps` : "Process not yet defined"}</div>
+    `;
+    row.appendChild(tile);
+  });
+}
+
+function buildChecklist(projects) {
+  const container = $("#checklistProjects");
+  container.innerHTML = "";
+
+  PROJECT_DEFS.forEach(def => {
+    const details = el("details", "checklist-project");
+    const { done, total, pct } = projectProgress(def, projects[def.id]);
+
+    if (!def.defined) {
+      details.className = "checklist-project checklist-project-undefined";
+      details.innerHTML = `
+        <summary class="checklist-project-summary">
+          <span class="cps-label">${escapeHtml(def.label)}</span>
+          <span class="cps-meta">Process not yet defined</span>
+        </summary>
+        <div class="checklist-project-body placeholder-card">
+          <p>The checklist and tracking fields for this sub-project will be added once the billing steps are confirmed.</p>
+        </div>
+      `;
+      container.appendChild(details);
+      return;
+    }
+
+    const data = projects[def.id] || emptyDefinedProject();
+    const hasNotes = projectHasNotes(data);
+    const barTone = projectBarTone(def, data);
+    let bodyHtml = `
+      <table class="checklist-table checklist-table-inner">
+        <thead><tr><th class="step-col">Step</th><th>Status</th><th>Time</th><th class="notes-col">Notes</th></tr></thead>
+        <tbody>
+    `;
+
+    CHECKLIST_ROWS.forEach(row => {
+      const item = (row.kind === "step" ? data.steps : data.mappings)?.[row.id] || emptyStep();
+      bodyHtml += `<tr>
+        <td class="step-col">${escapeHtml(row.label)}</td>
+        <td>${rowStatusCell(data, row)}</td>
+        <td>${item.time ? escapeHtml(item.time) : '<span class="muted">—</span>'}</td>
+        <td class="notes-col">${rowNotesCell(item)}</td>
+      </tr>`;
+    });
+
+    bodyHtml += `</tbody></table>`;
+
+    QUANTITY_GROUPS.forEach(group => {
+      const values = data.quantities?.[group.id] || {};
+      bodyHtml += `<details class="checklist-qty-group">
+        <summary>${escapeHtml(group.label)}</summary>
+        <div class="metric-grid">`;
+      group.fields.forEach(f => {
+        const v = values[f.key] !== undefined ? values[f.key] : "—";
+        bodyHtml += `<div class="metric"><span class="m-label">${escapeHtml(f.label)}</span><span class="m-val">${v}</span></div>`;
+      });
+      bodyHtml += `</div></details>`;
+    });
+
+    const projectNoteText = (data.notes || "").trim();
+    bodyHtml += `
+      <div class="project-notes-block">
+        <div class="project-notes-label">
+          Project notes
+          ${projectNoteText ? noteBadge(projectNoteText) : ""}
+        </div>
+        <div class="project-notes-body${projectNoteText ? "" : " empty"}">${projectNoteText ? escapeHtml(projectNoteText) : "No notes added."}</div>
+      </div>`;
+
+    details.innerHTML = `
+      <summary class="checklist-project-summary">
+        <span class="cps-label">${escapeHtml(def.label)}${hasNotes ? ` ${noteBadge("This sub-project has notes")}` : ""}</span>
+        <span class="cps-progress">
+          <span class="progress-bar-track"><span class="progress-bar-fill ${barTone}" style="width:${pct}%"></span></span>
+          <span class="cps-pct ${barTone}">${pct}% · ${done} of ${total}</span>
+        </span>
+      </summary>
+      <div class="checklist-project-body">${bodyHtml}</div>
+    `;
+    container.appendChild(details);
+  });
+}
+
+async function loadAndRender() {
+  try {
+    const res = await fetch("data.json?t=" + Date.now());
+    if (!res.ok) throw new Error("data.json not found (HTTP " + res.status + ")");
+    const data = await res.json();
+
+    $("#runLabel").textContent = data.run_label || "Billing Run";
+    $("#runUpdated").textContent = data.last_updated
+      ? "Last updated: " + new Date(data.last_updated).toLocaleString()
+      : "";
+
+    const projects = data.projects || {};
+    buildSummary(projects);
+    buildProjectProgress(projects);
+    buildChecklist(projects);
+    window.__dashboardData = data;
+  } catch (err) {
+    $("#errorBox").innerHTML = `<div class="load-error">Could not load <code>data.json</code>: ${escapeHtml(err.message)}. Make sure data.json is in the same folder as this page.</div>`;
+  }
+}
+
+function buildExportNode() {
+  const root = el("div", "pdf-export-root");
+  const topbar = $(".topbar").cloneNode(true);
+  topbar.querySelector(".btn-export")?.remove();
+  root.appendChild(topbar);
+  const wrap = $(".wrap").cloneNode(true);
+  wrap.querySelectorAll("details").forEach(d => { d.open = true; });
+  root.appendChild(wrap);
+  document.body.appendChild(root);
+  return root;
+}
+
+function exportPdf() {
+  const btn = $("#exportPdfBtn");
+  const label = $("#runLabel").textContent || "billing-dashboard";
+  const filename = label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".pdf";
+
+  btn.disabled = true;
+  btn.textContent = "Generating…";
+
+  const detailsEls = [...document.querySelectorAll("details")];
+  const wasOpen = detailsEls.map(d => d.open);
+  detailsEls.forEach(d => { d.open = true; });
+
+  const exportNode = buildExportNode();
+  const opt = {
+    margin: [8, 8, 8, 8],
+    filename,
+    image: { type: "jpeg", quality: 0.95 },
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 1180 },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+  };
+
+  html2pdf().set(opt).from(exportNode).save()
+    .catch(() => window.print())
+    .finally(() => {
+      exportNode.remove();
+      detailsEls.forEach((d, i) => { d.open = wasOpen[i]; });
+      btn.disabled = false;
+      btn.textContent = "Export PDF";
+    });
+}
+
+$("#exportPdfBtn").addEventListener("click", exportPdf);
+loadAndRender();
+</script>
+
+</body>
+</html>
