@@ -47,7 +47,7 @@
 <footer class="foot">Values, timestamps and statuses are set on the configuration page and published via <code>data.json</code>.</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="items.js?v=4"></script>
+<script src="items.js?v=6"></script>
 <script>
 const $ = (sel, root=document) => root.querySelector(sel);
 const el = (tag, cls, html) => {
@@ -157,6 +157,84 @@ function renderStandardProjectBody(data) {
   return bodyHtml;
 }
 
+function apiCheckResultBadge(result) {
+  if (result === "ok") return `<span class="badge status-done">\u2705 OK</span>`;
+  if (result === "no_match") return `<span class="badge status-issue">\u26A0\uFE0F No Match</span>`;
+  return `<span class="muted">—</span>`;
+}
+
+function renderGponVariantProjectBody(def, data) {
+  const checklistDefs = gponVariantChecklistDefs(def);
+  let bodyHtml = `
+    <table class="checklist-table checklist-table-inner">
+      <thead><tr><th class="step-col">Step</th><th>Status</th><th>Time</th><th class="notes-col">Notes</th></tr></thead>
+      <tbody>
+  `;
+
+  checklistDefs.forEach(step => {
+    if (step.id === "data_cleared") {
+      bodyHtml += `<tr>
+        <td class="step-col">API check result</td>
+        <td>${apiCheckResultBadge(data.api_check_result)}</td>
+        <td><span class="muted">—</span></td>
+        <td class="notes-col"><span class="muted">—</span></td>
+      </tr>`;
+    }
+
+    const applicable = gponVariantStepApplicable(data, step.id, def);
+    const item = data.checklist?.[step.id] || emptyStep();
+    const statusCell = applicable
+      ? badge(item.status)
+      : `<span class="badge status-na">\u2014 N/A</span><span class="row-note muted">Not required \u2014 API check OK</span>`;
+    const timeCell = applicable && item.time
+      ? escapeHtml(item.time)
+      : '<span class="muted">—</span>';
+    const notesCell = applicable ? rowNotesCellFromItem(item) : '<span class="muted">—</span>';
+
+    bodyHtml += `<tr>
+      <td class="step-col">${escapeHtml(step.label)}</td>
+      <td>${statusCell}</td>
+      <td>${timeCell}</td>
+      <td class="notes-col">${notesCell}</td>
+    </tr>`;
+  });
+
+  bodyHtml += `</tbody></table>`;
+
+  const comparison = data.value_comparison || {};
+  bodyHtml += `<div class="comparison-wrap">
+    <div class="comparison-label">Value comparison</div>
+    <table class="checklist-table comparison-table">
+      <thead><tr>
+        <th class="step-col">Metric</th><th>Raw File</th><th>BSS File</th><th>Difference</th>
+      </tr></thead><tbody>`;
+  GPON_VARIANT_COMPARISON_DEFS.forEach(row => {
+    const values = comparison[row.id] || {};
+    const raw = values.raw;
+    const bss = values.bss;
+    const diff = comparisonDiff(raw, bss);
+    const diffClass = diff !== 0 ? " comparison-diff-nonzero" : "";
+    bodyHtml += `<tr>
+      <td class="step-col">${escapeHtml(row.label)}</td>
+      <td>${formatComparisonValue(raw)}</td>
+      <td>${formatComparisonValue(bss)}</td>
+      <td class="comparison-diff${diffClass}">${formatComparisonValue(diff)}</td>
+    </tr>`;
+  });
+  bodyHtml += `</tbody></table></div>`;
+
+  const projectNoteText = (data.notes || "").trim();
+  bodyHtml += `
+    <div class="project-notes-block">
+      <div class="project-notes-label">
+        Notes
+        ${projectNoteText ? noteBadge(projectNoteText) : ""}
+      </div>
+      <div class="project-notes-body${projectNoteText ? "" : " empty"}">${projectNoteText ? escapeHtml(projectNoteText) : "No notes added."}</div>
+    </div>`;
+  return bodyHtml;
+}
+
 function renderInstallationsProjectBody(data) {
   let bodyHtml = `
     <table class="checklist-table checklist-table-inner">
@@ -239,6 +317,8 @@ function buildChecklist(projects) {
     const barTone = projectBarTone(def, data);
     const bodyHtml = isInstallationsProject(def)
       ? renderInstallationsProjectBody(data)
+      : isGponVariantProject(def)
+      ? renderGponVariantProjectBody(def, data)
       : renderStandardProjectBody(data);
 
     details.innerHTML = `

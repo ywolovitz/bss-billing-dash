@@ -214,6 +214,25 @@ a { color: var(--pink); }
 }
 .iterations-table { margin: 0; }
 .iterations-empty { padding: 12px 14px; margin: 0; font-size: 0.85rem; }
+.comparison-wrap {
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.comparison-label {
+  padding: 8px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pink-dark);
+  background: var(--pink-tint);
+  border-bottom: 1px solid var(--border);
+}
+.comparison-table { margin: 0; }
+.comparison-diff { font-weight: 600; }
+.comparison-diff-nonzero { color: var(--red); }
 
 /* ---------- Per-project progress row ---------- */
 .project-progress-row {

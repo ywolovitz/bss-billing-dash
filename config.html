@@ -151,6 +151,40 @@
   .btn-small.danger { color: var(--red); border-color: var(--red); }
   .iterations-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .iterations-hint { font-size: 0.78rem; color: var(--muted); }
+  .comparison-editor-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    margin-bottom: 10px;
+  }
+  .comparison-editor-table th,
+  .comparison-editor-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .comparison-editor-table th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    text-align: left;
+  }
+  .comparison-editor-table input {
+    width: 100%;
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .comparison-diff-cell {
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  .comparison-diff-cell.nonzero { color: var(--red); }
+  .step-block.key-conditional-muted { opacity: 0.72; }
 </style>
 </head>
 <body>
@@ -202,7 +236,7 @@
 
 </div>
 
-<script src="items.js?v=4"></script>
+<script src="items.js?v=6"></script>
 <script>
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
@@ -218,6 +252,13 @@ let currentData = null;
 
 function statusSelect(id, value) {
   const options = STATUS_OPTIONS.map(o =>
+    `<option value="${o.value}"${o.value === value ? " selected" : ""}>${o.label}</option>`
+  ).join("");
+  return `<select id="${id}">${options}</select>`;
+}
+
+function apiResultSelect(id, value) {
+  const options = GPON_VARIANT_API_RESULT_OPTIONS.map(o =>
     `<option value="${o.value}"${o.value === value ? " selected" : ""}>${o.label}</option>`
   ).join("");
   return `<select id="${id}">${options}</select>`;
@@ -355,6 +396,112 @@ function buildInstallationsProjectForm(def, data) {
   return project;
 }
 
+function updateGponVariantComparisonDiff(defId, rowId) {
+  const raw = Number($(`#${defId}_cmp_${rowId}_raw`)?.value) || 0;
+  const bss = Number($(`#${defId}_cmp_${rowId}_bss`)?.value) || 0;
+  const diff = comparisonDiff(raw, bss);
+  const cell = $(`#${defId}_cmp_${rowId}_diff`);
+  if (!cell) return;
+  cell.textContent = formatComparisonValue(diff);
+  cell.classList.toggle("nonzero", diff !== 0);
+}
+
+function buildGponVariantComparisonEditor(def, data, container) {
+  const wrap = el("div", "iterations-editor");
+  const comparison = data.value_comparison || {};
+  wrap.innerHTML = `
+    <table class="comparison-editor-table">
+      <thead><tr>
+        <th>Metric</th><th>Raw File</th><th>BSS File</th><th>Difference</th>
+      </tr></thead>
+      <tbody id="${def.id}_comparison_body"></tbody>
+    </table>
+    <span class="iterations-hint">Difference is calculated as BSS File minus Raw File.</span>
+  `;
+  container.appendChild(wrap);
+
+  const tbody = $(`#${def.id}_comparison_body`, wrap);
+  GPON_VARIANT_COMPARISON_DEFS.forEach(row => {
+    const values = comparison[row.id] || { raw: 0, bss: 0 };
+    const diff = comparisonDiff(values.raw, values.bss);
+    const tr = el("tr");
+    tr.innerHTML = `
+      <td>${row.label}</td>
+      <td><input type="number" step="any" id="${def.id}_cmp_${row.id}_raw" value="${values.raw ?? 0}" /></td>
+      <td><input type="number" step="any" id="${def.id}_cmp_${row.id}_bss" value="${values.bss ?? 0}" /></td>
+      <td class="comparison-diff-cell${diff !== 0 ? " nonzero" : ""}" id="${def.id}_cmp_${row.id}_diff">${formatComparisonValue(diff)}</td>
+    `;
+    tr.querySelectorAll("input").forEach(input => {
+      input.addEventListener("input", () => updateGponVariantComparisonDiff(def.id, row.id));
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+function updateGponVariantConditionalHints(def, apiResult) {
+  gponVariantConditionalStepIds(def).forEach(stepId => {
+    const block = $(`#${def.id}_chk_${stepId}_block`);
+    if (!block) return;
+    block.classList.toggle("key-conditional-muted", apiResult === "ok");
+  });
+}
+
+function buildGponVariantApiResultField(def, data) {
+  const meta = gponVariantMeta(def);
+  const block = el("div", "step-block");
+  const value = data.api_check_result || "";
+  block.innerHTML = `
+    <div class="step-name">API check result</div>
+    <div class="field-row">
+      <div class="field">
+        <label for="${def.id}_api_result">Result</label>
+        ${apiResultSelect(`${def.id}_api_result`, value)}
+      </div>
+    </div>
+    <p class="iterations-hint">${meta?.conditionalHint || ""}</p>
+  `;
+  block.querySelector(`#${def.id}_api_result`).addEventListener("change", (e) => {
+    updateGponVariantConditionalHints(def, e.target.value);
+  });
+  return block;
+}
+
+function buildGponVariantProjectForm(def, data) {
+  const checklistDefs = gponVariantChecklistDefs(def);
+  const project = el("details", "config-project");
+  project.appendChild(el("summary", null, def.label));
+  const inner = el("div", "config-project-body");
+
+  inner.appendChild(configSection("Checklist", body => {
+    checklistDefs.forEach(step => {
+      const stepData = data.checklist?.[step.id] || emptyStep();
+      const block = buildStepFields(`${def.id}_chk_${step.id}`, step, stepData);
+      if (step.conditional) {
+        block.id = `${def.id}_chk_${step.id}_block`;
+        if ((data.api_check_result || "") === "ok") block.classList.add("key-conditional-muted");
+      }
+      body.appendChild(block);
+      if (step.id === "api_file_checked") {
+        body.appendChild(buildGponVariantApiResultField(def, data));
+      }
+    });
+  }));
+
+  inner.appendChild(configSection("Value comparison", body => {
+    buildGponVariantComparisonEditor(def, data, body);
+  }));
+
+  inner.appendChild(configSection("Notes", body => {
+    const notesField = el("div", "field notes-field");
+    notesField.style.marginTop = "0";
+    notesField.innerHTML = `<label for="${def.id}_notes">Notes</label><textarea id="${def.id}_notes">${(data.notes||"")}</textarea>`;
+    body.appendChild(notesField);
+  }));
+
+  project.appendChild(inner);
+  return project;
+}
+
 function buildDefinedProjectForm(def, data) {
   const project = el("details", "config-project");
   if (def.id === "core_gpon") project.open = true;
@@ -420,6 +567,8 @@ function buildForm(projects) {
     const data = getProjectData(def, projects);
     if (isInstallationsProject(def)) {
       area.appendChild(buildInstallationsProjectForm(def, data));
+    } else if (isGponVariantProject(def)) {
+      area.appendChild(buildGponVariantProjectForm(def, data));
     } else {
       area.appendChild(buildDefinedProjectForm(def, data));
     }
@@ -450,6 +599,33 @@ function collectInstallationsProject(def) {
   });
 
   return { checklist, iterations, notes: $(`#${def.id}_notes`).value };
+}
+
+function collectGponVariantProject(def) {
+  const checklist = {};
+  gponVariantChecklistDefs(def).forEach(step => {
+    const p = `${def.id}_chk_${step.id}`;
+    checklist[step.id] = {
+      status: $(`#${p}_status`).value,
+      time: $(`#${p}_time`).value,
+      notes: $(`#${p}_notes`).value,
+    };
+  });
+
+  const value_comparison = {};
+  GPON_VARIANT_COMPARISON_DEFS.forEach(row => {
+    value_comparison[row.id] = {
+      raw: Number($(`#${def.id}_cmp_${row.id}_raw`)?.value) || 0,
+      bss: Number($(`#${def.id}_cmp_${row.id}_bss`)?.value) || 0,
+    };
+  });
+
+  return {
+    checklist,
+    api_check_result: $(`#${def.id}_api_result`).value,
+    value_comparison,
+    notes: $(`#${def.id}_notes`).value,
+  };
 }
 
 function collectQuantityGroup(prefix, fields) {
@@ -507,6 +683,8 @@ function collectFormData() {
     if (!def.defined) return;
     if (isInstallationsProject(def)) {
       projects[def.id] = collectInstallationsProject(def);
+    } else if (isGponVariantProject(def)) {
+      projects[def.id] = collectGponVariantProject(def);
     } else {
       projects[def.id] = collectDefinedProject(def);
     }

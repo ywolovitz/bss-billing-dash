@@ -172,6 +172,54 @@
       },
       "notes": ""
     },
+    "reach_gpon": {
+      "checklist": {
+        "raw_file_received": { "status": "pending", "time": "", "notes": "" },
+        "api_file_checked": { "status": "pending", "time": "", "notes": "" },
+        "data_cleared": { "status": "pending", "time": "", "notes": "" },
+        "file_import_1_of_5": { "status": "pending", "time": "", "notes": "" },
+        "file_import_2_of_5": { "status": "pending", "time": "", "notes": "" },
+        "file_import_3_of_5": { "status": "pending", "time": "", "notes": "" },
+        "file_import_4_of_5": { "status": "pending", "time": "", "notes": "" },
+        "file_import_5_of_5": { "status": "pending", "time": "", "notes": "" },
+        "value_checks": { "status": "pending", "time": "", "notes": "" },
+        "region_mapping": { "status": "pending", "time": "", "notes": "" },
+        "isp_mapping": { "status": "pending", "time": "", "notes": "" },
+        "product_code_mapping": { "status": "pending", "time": "", "notes": "" }
+      },
+      "api_check_result": "",
+      "value_comparison": {
+        "record_count": { "raw": 0, "bss": 0 },
+        "bill_isp_excl": { "raw": 0, "bss": 0 },
+        "current_period_rev": { "raw": 0, "bss": 0 },
+        "current_period_days": { "raw": 0, "bss": 0 },
+        "deferral_period_rev": { "raw": 0, "bss": 0 },
+        "deferral_period_days": { "raw": 0, "bss": 0 }
+      },
+      "notes": ""
+    },
+    "key_gpon": {
+      "checklist": {
+        "raw_file_received": { "status": "pending", "time": "", "notes": "" },
+        "api_file_checked": { "status": "pending", "time": "", "notes": "" },
+        "data_cleared": { "status": "pending", "time": "", "notes": "" },
+        "file_imported": { "status": "pending", "time": "", "notes": "" },
+        "value_checks": { "status": "pending", "time": "", "notes": "" },
+        "region_mapping": { "status": "pending", "time": "", "notes": "" },
+        "isp_mapping": { "status": "pending", "time": "", "notes": "" },
+        "product_code_mapping": { "status": "pending", "time": "", "notes": "" }
+      },
+      "api_check_result": "",
+      "value_comparison": {
+        "record_count": { "raw": 0, "bss": 0 },
+        "bill_isp_excl": { "raw": 0, "bss": 0 },
+        "current_period_rev": { "raw": 0, "bss": 0 },
+        "current_period_days": { "raw": 0, "bss": 0 },
+        "deferral_period_rev": { "raw": 0, "bss": 0 },
+        "deferral_period_days": { "raw": 0, "bss": 0 }
+      },
+      "notes": ""
+    },
     "installations": {
       "checklist": {
         "file_received": {

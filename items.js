@@ -52,11 +52,83 @@ const INSTALLATIONS_CHECKLIST_DEFS = [
   { id: "clean_files_dropbox", label: "Clean files uploaded to Dropbox" },
 ];
 
+const KEY_GPON_CHECKLIST_DEFS = [
+  { id: "raw_file_received",    label: "Raw File received" },
+  { id: "api_file_checked",     label: "API file checked" },
+  { id: "data_cleared",         label: "Data cleared", conditional: true },
+  { id: "file_imported",        label: "File Imported", conditional: true },
+  { id: "value_checks",         label: "Value checks" },
+  { id: "region_mapping",       label: "Region Mapping" },
+  { id: "isp_mapping",          label: "ISP Mapping" },
+  { id: "product_code_mapping", label: "Product Code Mapping" },
+];
+
+const KEY_GPON_CONDITIONAL_STEP_IDS = ["data_cleared", "file_imported"];
+
+const REACH_GPON_FILE_IMPORT_COUNT = 5;
+
+const REACH_GPON_FILE_IMPORT_DEFS = Array.from(
+  { length: REACH_GPON_FILE_IMPORT_COUNT },
+  (_, i) => ({
+    id: `file_import_${i + 1}_of_${REACH_GPON_FILE_IMPORT_COUNT}`,
+    label: `Import ${i + 1} of ${REACH_GPON_FILE_IMPORT_COUNT}`,
+    conditional: true,
+  })
+);
+
+const REACH_GPON_CHECKLIST_DEFS = [
+  { id: "raw_file_received",    label: "Raw File received" },
+  { id: "api_file_checked",     label: "API file checked" },
+  { id: "data_cleared",         label: "Data cleared", conditional: true },
+  ...REACH_GPON_FILE_IMPORT_DEFS,
+  { id: "value_checks",         label: "Value checks" },
+  { id: "region_mapping",       label: "Region Mapping" },
+  { id: "isp_mapping",          label: "ISP Mapping" },
+  { id: "product_code_mapping", label: "Product Code Mapping" },
+];
+
+const REACH_GPON_CONDITIONAL_STEP_IDS = [
+  "data_cleared",
+  ...REACH_GPON_FILE_IMPORT_DEFS.map(d => d.id),
+];
+
+const GPON_VARIANT_API_RESULT_OPTIONS = [
+  { value: "",         label: "— Pending" },
+  { value: "ok",       label: "OK" },
+  { value: "no_match", label: "No Match" },
+];
+
+const GPON_VARIANT_COMPARISON_DEFS = [
+  { id: "record_count",          label: "Record Count" },
+  { id: "bill_isp_excl",         label: "Bill ISP Excl." },
+  { id: "current_period_rev",    label: "Current Period Rev" },
+  { id: "current_period_days",   label: "Current Period Days" },
+  { id: "deferral_period_rev",   label: "Deferral Period Rev" },
+  { id: "deferral_period_days",  label: "Deferral Period Days" },
+];
+
+const GPON_VARIANT_REGISTRY = {
+  key_gpon: {
+    checklistDefs: KEY_GPON_CHECKLIST_DEFS,
+    conditionalStepIds: KEY_GPON_CONDITIONAL_STEP_IDS,
+    conditionalHint: "If OK, Data cleared and File Imported are not required.",
+  },
+  reach_gpon: {
+    checklistDefs: REACH_GPON_CHECKLIST_DEFS,
+    conditionalStepIds: REACH_GPON_CONDITIONAL_STEP_IDS,
+    conditionalHint: "If OK, Data cleared and file imports (1–5 of 5) are not required.",
+  },
+};
+
+// Backward-compatible aliases
+const KEY_GPON_API_RESULT_OPTIONS = GPON_VARIANT_API_RESULT_OPTIONS;
+const KEY_GPON_COMPARISON_DEFS = GPON_VARIANT_COMPARISON_DEFS;
+
 const PROJECT_DEFS = [
   { id: "core_gpon",      label: "Core-GPON",      defined: true,  type: "standard" },
   { id: "core_ae",        label: "Core-AE",        defined: true,  type: "standard" },
-  { id: "reach_gpon",     label: "Reach-GPON",     defined: false, type: "standard" },
-  { id: "key_gpon",       label: "Key-GPON",       defined: false, type: "standard" },
+  { id: "reach_gpon",     label: "Reach-GPON",     defined: true,  type: "reach_gpon" },
+  { id: "key_gpon",       label: "Key-GPON",       defined: true,  type: "key_gpon" },
   { id: "installations",  label: "Installations",  defined: true,  type: "installations" },
 ];
 
@@ -88,6 +160,64 @@ function isInstallationsProject(def) {
   return def.type === "installations";
 }
 
+function isKeyGponProject(def) {
+  return def.type === "key_gpon";
+}
+
+function isReachGponProject(def) {
+  return def.type === "reach_gpon";
+}
+
+function isGponVariantProject(def) {
+  return isKeyGponProject(def) || isReachGponProject(def);
+}
+
+function gponVariantMeta(def) {
+  return GPON_VARIANT_REGISTRY[def.id] || null;
+}
+
+function gponVariantChecklistDefs(def) {
+  return gponVariantMeta(def)?.checklistDefs || [];
+}
+
+function gponVariantConditionalStepIds(def) {
+  return gponVariantMeta(def)?.conditionalStepIds || [];
+}
+
+function gponVariantStepApplicable(projectData, stepId, projectDef) {
+  if (!gponVariantConditionalStepIds(projectDef).includes(stepId)) return true;
+  return (projectData?.api_check_result || "") !== "ok";
+}
+
+function gponVariantCheckStatus(projectData, stepId, projectDef) {
+  if (!gponVariantStepApplicable(projectData, stepId, projectDef)) return "na";
+  return (projectData?.checklist?.[stepId]?.status) || "pending";
+}
+
+function gponVariantApiResultStatus(projectData) {
+  const result = projectData?.api_check_result || "";
+  if (result === "ok" || result === "no_match") return "done";
+  return "pending";
+}
+
+// Backward-compatible aliases
+function keyGponStepApplicable(projectData, stepId) {
+  return gponVariantStepApplicable(projectData, stepId, { id: "key_gpon", type: "key_gpon" });
+}
+
+function comparisonDiff(raw, bss) {
+  const r = Number(raw) || 0;
+  const b = Number(bss) || 0;
+  return b - r;
+}
+
+function formatComparisonValue(value) {
+  if (value === "" || value === null || value === undefined) return "—";
+  const n = Number(value);
+  if (Number.isNaN(n)) return "—";
+  return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+}
+
 function emptyStep() {
   return { status: "pending", time: "", notes: "" };
 }
@@ -102,6 +232,26 @@ function emptyInstallationsProject() {
     iterations: [],
     notes: "",
   };
+}
+
+function emptyGponVariantProject(def) {
+  const checklistDefs = gponVariantChecklistDefs(def);
+  return {
+    checklist: Object.fromEntries(checklistDefs.map(d => [d.id, emptyStep()])),
+    api_check_result: "",
+    value_comparison: Object.fromEntries(
+      GPON_VARIANT_COMPARISON_DEFS.map(d => [d.id, { raw: 0, bss: 0 }])
+    ),
+    notes: "",
+  };
+}
+
+function emptyKeyGponProject() {
+  return emptyGponVariantProject({ id: "key_gpon", type: "key_gpon" });
+}
+
+function emptyReachGponProject() {
+  return emptyGponVariantProject({ id: "reach_gpon", type: "reach_gpon" });
 }
 
 function emptyDefinedProject() {
@@ -123,6 +273,7 @@ function emptyDefinedProject() {
 function getProjectData(def, projects) {
   if (!def.defined) return null;
   if (isInstallationsProject(def)) return projects[def.id] || emptyInstallationsProject();
+  if (isGponVariantProject(def)) return projects[def.id] || emptyGponVariantProject(def);
   return projects[def.id] || emptyDefinedProject();
 }
 
@@ -130,6 +281,12 @@ function projectTrackables(projectDef) {
   if (!projectDef.defined) return [];
   if (isInstallationsProject(projectDef)) {
     return INSTALLATIONS_CHECKLIST_DEFS.map(s => ({ kind: "inst_check", id: s.id }));
+  }
+  if (isGponVariantProject(projectDef)) {
+    const trackables = gponVariantChecklistDefs(projectDef)
+      .map(s => ({ kind: "gpon_check", id: s.id }));
+    trackables.push({ kind: "gpon_api_result", id: "api_check_result" });
+    return trackables;
   }
   return [
     ...allStepDefs().map(s => ({ kind: "step", id: s.id })),
@@ -151,6 +308,8 @@ function installationsCheckStatus(projectData, stepId) {
 
 function trackableStatus(projectData, trackable, projectDef) {
   if (trackable.kind === "inst_check") return installationsCheckStatus(projectData, trackable.id);
+  if (trackable.kind === "gpon_check") return gponVariantCheckStatus(projectData, trackable.id, projectDef);
+  if (trackable.kind === "gpon_api_result") return gponVariantApiResultStatus(projectData);
   if (trackable.kind === "step") return stepStatus(projectData, trackable.id);
   return mappingStatus(projectData, trackable.id);
 }
@@ -158,7 +317,11 @@ function trackableStatus(projectData, trackable, projectDef) {
 function projectProgress(projectDef, projectData) {
   const trackables = projectTrackables(projectDef);
   if (trackables.length === 0) return { done: 0, total: 0, pct: 0, na: 0 };
-  const data = projectData || (isInstallationsProject(projectDef) ? emptyInstallationsProject() : emptyDefinedProject());
+  const data = projectData || (
+    isInstallationsProject(projectDef) ? emptyInstallationsProject()
+    : isGponVariantProject(projectDef) ? emptyGponVariantProject(projectDef)
+    : emptyDefinedProject()
+  );
   let done = 0, applicable = 0, na = 0;
   trackables.forEach(t => {
     const status = trackableStatus(data, t, projectDef);
@@ -194,7 +357,11 @@ function overallProgress(projects) {
 
 function projectBarTone(projectDef, projectData) {
   if (!projectDef.defined) return "bar-undefined";
-  const data = projectData || (isInstallationsProject(projectDef) ? emptyInstallationsProject() : emptyDefinedProject());
+  const data = projectData || (
+    isInstallationsProject(projectDef) ? emptyInstallationsProject()
+    : isGponVariantProject(projectDef) ? emptyGponVariantProject(projectDef)
+    : emptyDefinedProject()
+  );
   let hasIssue = false;
   let hasInProgress = false;
   let applicable = 0;
@@ -216,7 +383,7 @@ function projectBarTone(projectDef, projectData) {
 
 function projectHasNotes(data, projectDef) {
   if (!data) return false;
-  if (isInstallationsProject(projectDef)) {
+  if (isInstallationsProject(projectDef) || isGponVariantProject(projectDef)) {
     if ((data.notes || "").trim()) return true;
     return Object.values(data.checklist || {}).some(item => (item.notes || "").trim());
   }
