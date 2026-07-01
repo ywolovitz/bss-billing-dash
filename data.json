@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T11:08:49.800Z",
+  "last_updated": "2026-07-01T11:14:51.901Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -384,13 +384,20 @@
           "fix": "Extra Installs",
           "fix_count": 123,
           "sent_to_zo": "12:35",
-          "completed_by_zo": ""
+          "completed_by_zo": "12:48"
         },
         {
           "iteration": 2,
           "fix": "Missing Installs",
           "fix_count": 2,
           "sent_to_zo": "12:37",
+          "completed_by_zo": "12:47"
+        },
+        {
+          "iteration": 3,
+          "fix": "Missing Installs",
+          "fix_count": 3,
+          "sent_to_zo": "13:13",
           "completed_by_zo": ""
         }
       ],
