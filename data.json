@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T14:52:02.857Z",
+  "last_updated": "2026-07-01T15:31:12.201Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -359,8 +359,8 @@
           "notes": ""
         },
         "clean_files_dropbox": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "17:30",
           "notes": ""
         }
       },
