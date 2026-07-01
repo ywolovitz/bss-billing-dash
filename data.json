@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T07:29:33.919Z",
+  "last_updated": "2026-07-01T07:37:03.207Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -100,9 +100,9 @@
           "notes": "no monthly fixes required"
         },
         "start_checks_sent": {
-          "status": "pending",
-          "time": "",
-          "notes": ""
+          "status": "done",
+          "time": "09:36",
+          "notes": "* fees of 550 picked up\n* downgrade orders still in file"
         },
         "data_checks_sent": {
           "status": "pending",
