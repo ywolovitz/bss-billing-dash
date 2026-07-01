@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T10:58:44.997Z",
+  "last_updated": "2026-07-01T11:08:49.800Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -175,12 +175,12 @@
     "reach_gpon": {
       "checklist": {
         "raw_file_received": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "03:03",
           "notes": ""
         },
         "api_file_checked": {
-          "status": "pending",
+          "status": "in_progress",
           "time": "",
           "notes": ""
         },
@@ -238,27 +238,27 @@
       "api_check_result": "",
       "value_comparison": {
         "record_count": {
-          "raw": 0,
+          "raw": 949374,
           "bss": 0
         },
         "bill_isp_excl": {
-          "raw": 0,
+          "raw": 150349664.3,
           "bss": 0
         },
         "current_period_rev": {
-          "raw": 0,
+          "raw": 150329181.8,
           "bss": 0
         },
         "current_period_days": {
-          "raw": 0,
+          "raw": 15597049,
           "bss": 0
         },
         "deferral_period_rev": {
-          "raw": 0,
+          "raw": 60704115.12,
           "bss": 0
         },
         "deferral_period_days": {
-          "raw": 0,
+          "raw": 6418977,
           "bss": 0
         }
       },
