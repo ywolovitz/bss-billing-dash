@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T07:16:12.009Z",
+  "last_updated": "2026-07-01T07:21:01.131Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -100,8 +100,8 @@
           "notes": ""
         },
         "start_checks_sent": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "09:19",
           "notes": "8 Downgrade orders - same issue as GPON but on 8 orders"
         },
         "data_checks_sent": {
