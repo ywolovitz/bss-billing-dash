@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T08:24:24.121Z",
+  "last_updated": "2026-07-01T08:49:00.893Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -155,9 +155,9 @@
           "notes": ""
         },
         "start_product_codes": {
-          "status": "pending",
-          "time": "",
-          "notes": ""
+          "status": "done",
+          "time": "10:48",
+          "notes": "* Cancellation and downgrade order product codes were mapped to the monthly order product code as per discussion with Saeed"
         },
         "isps": {
           "status": "done",
