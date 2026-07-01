@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T07:37:03.207Z",
+  "last_updated": "2026-07-01T08:04:19.601Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -40,8 +40,8 @@
           "notes": ""
         },
         "clean_file_dropbox": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "10:02",
           "notes": ""
         }
       },
@@ -105,14 +105,14 @@
           "notes": "* fees of 550 picked up\n* downgrade orders still in file"
         },
         "data_checks_sent": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "09:36",
           "notes": ""
         },
         "monthly_fixes_done": {
-          "status": "pending",
-          "time": "",
-          "notes": ""
+          "status": "done",
+          "time": "09:24",
+          "notes": "no monthly fixes required"
         },
         "start_fixes_done": {
           "status": "pending",
@@ -139,9 +139,9 @@
         },
         "start": {
           "duplicates": 0,
-          "missing": 0,
-          "extras": 0,
-          "value_corrections": 0
+          "missing": 1,
+          "extras": 3,
+          "value_corrections": 332
         },
         "data": {
           "customer_names": 0,
