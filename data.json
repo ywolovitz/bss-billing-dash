@@ -1,6 +1,6 @@
 {
-  "run_label": "June 2026 Month-End Run",
-  "last_updated": "2026-06-25T13:06:52.357Z",
+  "run_label": "July 2026 Month-End Bill Run",
+  "last_updated": "2026-07-01T06:27:05.920Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -10,78 +10,78 @@
           "notes": ""
         },
         "monthly_checks_sent": {
-          "status": "done",
-          "time": "10:55",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "start_checks_sent": {
-          "status": "done",
-          "time": "11:02",
+          "status": "pending",
+          "time": "",
           "notes": "New Downgrade Product in NMS data for 3 records."
         },
         "data_checks_sent": {
-          "status": "done",
-          "time": "11:11",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "monthly_fixes_done": {
-          "status": "done",
-          "time": "11:53",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "start_fixes_done": {
-          "status": "done",
-          "time": "11:58",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "data_fixes_done": {
-          "status": "done",
-          "time": "12:05",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "clean_file_dropbox": {
-          "status": "done",
-          "time": "14:53",
+          "status": "pending",
+          "time": "",
           "notes": ""
         }
       },
       "quantities": {
         "monthly": {
-          "duplicates": 2,
-          "missing": 347,
-          "extras": 1417,
-          "value_corrections": 121
+          "duplicates": 4,
+          "missing": 0,
+          "extras": 0,
+          "value_corrections": 0
         },
         "start": {
           "duplicates": 0,
-          "missing": 3180,
+          "missing": 0,
           "extras": 0,
-          "value_corrections": 3
+          "value_corrections": 0
         },
         "data": {
-          "customer_names": 1775,
-          "object_numbers": 3489
+          "customer_names": 0,
+          "object_numbers": 0
         }
       },
       "mappings": {
         "monthly_product_codes": {
           "status": "done",
-          "time": "14:41",
+          "time": "01:19",
           "notes": ""
         },
         "start_product_codes": {
-          "status": "done",
-          "time": "14:42",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "isps": {
-          "status": "done",
-          "time": "14:43",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "regions": {
-          "status": "done",
-          "time": "14:43",
+          "status": "pending",
+          "time": "",
           "notes": ""
         }
       },
@@ -90,38 +90,38 @@
     "core_ae": {
       "steps": {
         "nms_received": {
-          "status": "done",
-          "time": "01:04",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "monthly_checks_sent": {
-          "status": "done",
-          "time": "13:21",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "start_checks_sent": {
-          "status": "done",
-          "time": "13:30",
+          "status": "pending",
+          "time": "",
           "notes": "8 Downgrade orders - same issue as GPON but on 8 orders"
         },
         "data_checks_sent": {
-          "status": "done",
-          "time": "13:38",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "monthly_fixes_done": {
-          "status": "done",
-          "time": "13:41",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "start_fixes_done": {
-          "status": "done",
-          "time": "13:59",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "data_fixes_done": {
-          "status": "done",
-          "time": "14:18",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "clean_file_dropbox": {
@@ -134,39 +134,39 @@
         "monthly": {
           "duplicates": 0,
           "missing": 0,
-          "extras": 2,
-          "value_corrections": 8
+          "extras": 0,
+          "value_corrections": 0
         },
         "start": {
           "duplicates": 0,
-          "missing": 11,
-          "extras": 7,
-          "value_corrections": 175
+          "missing": 0,
+          "extras": 0,
+          "value_corrections": 0
         },
         "data": {
-          "customer_names": 1473,
+          "customer_names": 0,
           "object_numbers": 0
         }
       },
       "mappings": {
         "monthly_product_codes": {
-          "status": "done",
-          "time": "14:15",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "start_product_codes": {
-          "status": "done",
-          "time": "14:15",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "isps": {
-          "status": "done",
-          "time": "14:05",
+          "status": "pending",
+          "time": "",
           "notes": ""
         },
         "regions": {
-          "status": "done",
-          "time": "14:05",
+          "status": "pending",
+          "time": "",
           "notes": ""
         }
       },
