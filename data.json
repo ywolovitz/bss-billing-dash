@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T10:38:09.574Z",
+  "last_updated": "2026-07-01T10:51:50.845Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -125,8 +125,8 @@
           "notes": ""
         },
         "clean_file_dropbox": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "12:51",
           "notes": ""
         }
       },
@@ -170,7 +170,7 @@
           "notes": "no region mapping required"
         }
       },
-      "notes": ""
+      "notes": "Downgrade orders have been excluded in the recon"
     },
     "installations": {
       "checklist": {
