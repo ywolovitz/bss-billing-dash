@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T11:14:51.901Z",
+  "last_updated": "2026-07-01T13:02:55.537Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -235,31 +235,31 @@
           "notes": ""
         }
       },
-      "api_check_result": "",
+      "api_check_result": "no_match",
       "value_comparison": {
         "record_count": {
           "raw": 949374,
-          "bss": 0
+          "bss": 1048576
         },
         "bill_isp_excl": {
           "raw": 150349664.3,
-          "bss": 0
+          "bss": 201681154
         },
         "current_period_rev": {
           "raw": 150329181.8,
-          "bss": 0
+          "bss": 107869126.3
         },
         "current_period_days": {
           "raw": 15597049,
-          "bss": 0
+          "bss": 11321569
         },
         "deferral_period_rev": {
           "raw": 60704115.12,
-          "bss": 0
+          "bss": 45439808.05
         },
         "deferral_period_days": {
           "raw": 6418977,
-          "bss": 0
+          "bss": 4802854
         }
       },
       "notes": ""
@@ -398,6 +398,20 @@
           "fix": "Missing Installs",
           "fix_count": 3,
           "sent_to_zo": "13:13",
+          "completed_by_zo": "13:31"
+        },
+        {
+          "iteration": 4,
+          "fix": "Network Code fix",
+          "fix_count": 582,
+          "sent_to_zo": "14:59",
+          "completed_by_zo": ""
+        },
+        {
+          "iteration": 4,
+          "fix": "Installation Closure Type",
+          "fix_count": 5058,
+          "sent_to_zo": "14:59",
           "completed_by_zo": ""
         }
       ],
