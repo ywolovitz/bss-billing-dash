@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T07:21:01.131Z",
+  "last_updated": "2026-07-01T07:29:33.919Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -25,18 +25,18 @@
           "notes": ""
         },
         "monthly_fixes_done": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "09:07",
           "notes": ""
         },
         "start_fixes_done": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "09:19",
           "notes": ""
         },
         "data_fixes_done": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "09:24",
           "notes": ""
         },
         "clean_file_dropbox": {
@@ -96,13 +96,13 @@
         },
         "monthly_checks_sent": {
           "status": "done",
-          "time": "09:07",
-          "notes": ""
+          "time": "09:24",
+          "notes": "no monthly fixes required"
         },
         "start_checks_sent": {
-          "status": "done",
-          "time": "09:19",
-          "notes": "8 Downgrade orders - same issue as GPON but on 8 orders"
+          "status": "pending",
+          "time": "",
+          "notes": ""
         },
         "data_checks_sent": {
           "status": "pending",
@@ -165,9 +165,9 @@
           "notes": ""
         },
         "regions": {
-          "status": "pending",
-          "time": "",
-          "notes": ""
+          "status": "done",
+          "time": "09:24",
+          "notes": "no region mapping required"
         }
       },
       "notes": ""
