@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T08:49:00.893Z",
+  "last_updated": "2026-07-01T09:57:59.931Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -125,8 +125,8 @@
           "notes": ""
         },
         "clean_file_dropbox": {
-          "status": "done",
-          "time": "14:52",
+          "status": "pending",
+          "time": "",
           "notes": ""
         }
       },
@@ -170,6 +170,52 @@
           "notes": "no region mapping required"
         }
       },
+      "notes": ""
+    },
+    "installations": {
+      "checklist": {
+        "file_received": {
+          "status": "done",
+          "time": "09:45",
+          "notes": ""
+        },
+        "fixes_complete": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "region_mapping": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "isp_mapping": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "clean_files_dropbox": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        }
+      },
+      "iterations": [
+        {
+          "iteration": 1,
+          "fix": "Exras Installs",
+          "fix_count": 1984,
+          "sent_to_zo": "11:23",
+          "completed_by_zo": "11:31"
+        },
+        {
+          "iteration": 1,
+          "fix": "Missing Installs",
+          "fix_count": 15258,
+          "sent_to_zo": "11:31",
+          "completed_by_zo": "11:57"
+        }
+      ],
       "notes": ""
     }
   }
