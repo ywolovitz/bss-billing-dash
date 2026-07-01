@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T06:40:23.505Z",
+  "last_updated": "2026-07-01T07:00:37.634Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -20,8 +20,8 @@
           "notes": "New Downgrade Product in NMS data for 3 records."
         },
         "data_checks_sent": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "08:46",
           "notes": ""
         },
         "monthly_fixes_done": {
@@ -59,29 +59,29 @@
           "value_corrections": 1
         },
         "data": {
-          "customer_names": 0,
-          "object_numbers": 0
+          "customer_names": 749,
+          "object_numbers": 912
         }
       },
       "mappings": {
         "monthly_product_codes": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "08:50",
           "notes": ""
         },
         "start_product_codes": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "08:51",
           "notes": ""
         },
         "isps": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "09:00",
           "notes": ""
         },
         "regions": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "09:00",
           "notes": ""
         }
       },
