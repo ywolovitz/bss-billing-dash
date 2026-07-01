@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T09:57:59.931Z",
+  "last_updated": "2026-07-01T10:38:09.574Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -172,54 +172,6 @@
       },
       "notes": ""
     },
-    "reach_gpon": {
-      "checklist": {
-        "raw_file_received": { "status": "pending", "time": "", "notes": "" },
-        "api_file_checked": { "status": "pending", "time": "", "notes": "" },
-        "data_cleared": { "status": "pending", "time": "", "notes": "" },
-        "file_import_1_of_5": { "status": "pending", "time": "", "notes": "" },
-        "file_import_2_of_5": { "status": "pending", "time": "", "notes": "" },
-        "file_import_3_of_5": { "status": "pending", "time": "", "notes": "" },
-        "file_import_4_of_5": { "status": "pending", "time": "", "notes": "" },
-        "file_import_5_of_5": { "status": "pending", "time": "", "notes": "" },
-        "value_checks": { "status": "pending", "time": "", "notes": "" },
-        "region_mapping": { "status": "pending", "time": "", "notes": "" },
-        "isp_mapping": { "status": "pending", "time": "", "notes": "" },
-        "product_code_mapping": { "status": "pending", "time": "", "notes": "" }
-      },
-      "api_check_result": "",
-      "value_comparison": {
-        "record_count": { "raw": 0, "bss": 0 },
-        "bill_isp_excl": { "raw": 0, "bss": 0 },
-        "current_period_rev": { "raw": 0, "bss": 0 },
-        "current_period_days": { "raw": 0, "bss": 0 },
-        "deferral_period_rev": { "raw": 0, "bss": 0 },
-        "deferral_period_days": { "raw": 0, "bss": 0 }
-      },
-      "notes": ""
-    },
-    "key_gpon": {
-      "checklist": {
-        "raw_file_received": { "status": "pending", "time": "", "notes": "" },
-        "api_file_checked": { "status": "pending", "time": "", "notes": "" },
-        "data_cleared": { "status": "pending", "time": "", "notes": "" },
-        "file_imported": { "status": "pending", "time": "", "notes": "" },
-        "value_checks": { "status": "pending", "time": "", "notes": "" },
-        "region_mapping": { "status": "pending", "time": "", "notes": "" },
-        "isp_mapping": { "status": "pending", "time": "", "notes": "" },
-        "product_code_mapping": { "status": "pending", "time": "", "notes": "" }
-      },
-      "api_check_result": "",
-      "value_comparison": {
-        "record_count": { "raw": 0, "bss": 0 },
-        "bill_isp_excl": { "raw": 0, "bss": 0 },
-        "current_period_rev": { "raw": 0, "bss": 0 },
-        "current_period_days": { "raw": 0, "bss": 0 },
-        "deferral_period_rev": { "raw": 0, "bss": 0 },
-        "deferral_period_days": { "raw": 0, "bss": 0 }
-      },
-      "notes": ""
-    },
     "installations": {
       "checklist": {
         "file_received": {
@@ -262,6 +214,20 @@
           "fix_count": 15258,
           "sent_to_zo": "11:31",
           "completed_by_zo": "11:57"
+        },
+        {
+          "iteration": 2,
+          "fix": "Extra Installs",
+          "fix_count": 123,
+          "sent_to_zo": "12:35",
+          "completed_by_zo": ""
+        },
+        {
+          "iteration": 2,
+          "fix": "Missing Installs",
+          "fix_count": 2,
+          "sent_to_zo": "12:37",
+          "completed_by_zo": ""
         }
       ],
       "notes": ""
