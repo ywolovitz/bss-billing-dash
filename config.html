@@ -105,6 +105,52 @@
   details.config-project-undefined > summary {
     background: var(--navy-light);
   }
+  .iterations-editor { margin-top: 4px; }
+  .iterations-editor-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    margin-bottom: 10px;
+  }
+  .iterations-editor-table th,
+  .iterations-editor-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .iterations-editor-table th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    text-align: left;
+  }
+  .iterations-editor-table input {
+    width: 100%;
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .iterations-editor-table .iter-iteration-input {
+    width: 56px;
+    text-align: center;
+  }
+  .btn-small {
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    cursor: pointer;
+  }
+  .btn-small:hover { background: var(--bg); }
+  .btn-small.danger { color: var(--red); border-color: var(--red); }
+  .iterations-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .iterations-hint { font-size: 0.78rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -156,16 +202,17 @@
 
 </div>
 
-<script src="items.js"></script>
+<script src="items.js?v=4"></script>
 <script>
 const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
 const el = (tag, cls, html) => {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
   if (html !== undefined) e.innerHTML = html;
   return e;
 };
-const DRAFT_KEY = "mebr_dashboard_draft_v2";
+const DRAFT_KEY = "mebr_dashboard_draft_v3";
 
 let currentData = null;
 
@@ -221,6 +268,91 @@ function configSection(title, buildBody) {
   buildBody(body);
   details.appendChild(body);
   return details;
+}
+
+function buildInstallationsIterationRow(def, idx, row) {
+  const iteration = row.iteration !== undefined && row.iteration !== "" ? row.iteration : 1;
+  const tr = el("tr");
+  tr.dataset.iterIdx = idx;
+  tr.innerHTML = `
+    <td><input type="number" class="iter-iteration-input" id="${def.id}_iter_${idx}_iteration" value="${iteration}" min="1" /></td>
+    <td><input type="text" id="${def.id}_iter_${idx}_fix" value="${(row.fix||"").replace(/"/g,'&quot;')}" placeholder="Description" /></td>
+    <td><input type="number" id="${def.id}_iter_${idx}_fix_count" value="${row.fix_count !== undefined ? row.fix_count : 0}" min="0" /></td>
+    <td><input type="text" id="${def.id}_iter_${idx}_sent" value="${(row.sent_to_zo||"").replace(/"/g,'&quot;')}" placeholder="HH:MM" /></td>
+    <td><input type="text" id="${def.id}_iter_${idx}_completed" value="${(row.completed_by_zo||"").replace(/"/g,'&quot;')}" placeholder="HH:MM" /></td>
+    <td><button type="button" class="btn-small danger iter-remove">Remove</button></td>
+  `;
+  tr.querySelector(".iter-remove").addEventListener("click", () => {
+    tr.remove();
+    reindexInstallationsRows(def.id);
+  });
+  return tr;
+}
+
+function reindexInstallationsRows(projectId) {
+  const rows = $$(`#${projectId}_iterations_body tr`);
+  rows.forEach((tr, idx) => {
+    tr.dataset.iterIdx = idx;
+    tr.querySelectorAll("input").forEach(input => {
+      input.id = input.id.replace(/_iter_\d+_/, `_iter_${idx}_`);
+    });
+  });
+}
+
+function buildInstallationsIterationsEditor(def, data, container) {
+  const wrap = el("div", "iterations-editor");
+  wrap.innerHTML = `
+    <table class="iterations-editor-table">
+      <thead><tr>
+        <th>Iteration</th><th>Fix</th><th>Number of Fixes</th><th>Sent to ZO</th><th>Completed by ZO</th><th></th>
+      </tr></thead>
+      <tbody id="${def.id}_iterations_body"></tbody>
+    </table>
+    <div class="iterations-actions">
+      <button type="button" class="btn-small" id="${def.id}_add_iter">+ Add fix row</button>
+      <span class="iterations-hint">Multiple rows can share the same iteration number.</span>
+    </div>
+  `;
+  container.appendChild(wrap);
+
+  const tbody = $(`#${def.id}_iterations_body`, wrap);
+  (data.iterations || []).forEach((row, idx) => tbody.appendChild(buildInstallationsIterationRow(def, idx, row)));
+
+  $(`#${def.id}_add_iter`, wrap).addEventListener("click", () => {
+    const rows = tbody.querySelectorAll("tr");
+    const count = rows.length;
+    const lastIteration = count
+      ? Number($(`#${def.id}_iter_${count - 1}_iteration`, tbody)?.value) || 1
+      : 1;
+    tbody.appendChild(buildInstallationsIterationRow(def, count, emptyInstallationsIteration(lastIteration)));
+  });
+}
+
+function buildInstallationsProjectForm(def, data) {
+  const project = el("details", "config-project");
+  project.appendChild(el("summary", null, def.label));
+  const inner = el("div", "config-project-body");
+
+  inner.appendChild(configSection("Checklist", body => {
+    INSTALLATIONS_CHECKLIST_DEFS.forEach(step => {
+      const stepData = data.checklist?.[step.id] || emptyStep();
+      body.appendChild(buildStepFields(`${def.id}_chk_${step.id}`, step, stepData));
+    });
+  }));
+
+  inner.appendChild(configSection("Check & fix iterations", body => {
+    buildInstallationsIterationsEditor(def, data, body);
+  }));
+
+  inner.appendChild(configSection("Notes", body => {
+    const notesField = el("div", "field notes-field");
+    notesField.style.marginTop = "0";
+    notesField.innerHTML = `<label for="${def.id}_notes">Notes</label><textarea id="${def.id}_notes">${(data.notes||"")}</textarea>`;
+    body.appendChild(notesField);
+  }));
+
+  project.appendChild(inner);
+  return project;
 }
 
 function buildDefinedProjectForm(def, data) {
@@ -285,9 +417,39 @@ function buildForm(projects) {
       return;
     }
 
-    const data = projects[def.id] || emptyDefinedProject();
-    area.appendChild(buildDefinedProjectForm(def, data));
+    const data = getProjectData(def, projects);
+    if (isInstallationsProject(def)) {
+      area.appendChild(buildInstallationsProjectForm(def, data));
+    } else {
+      area.appendChild(buildDefinedProjectForm(def, data));
+    }
   });
+}
+
+function collectInstallationsProject(def) {
+  const checklist = {};
+  INSTALLATIONS_CHECKLIST_DEFS.forEach(step => {
+    const p = `${def.id}_chk_${step.id}`;
+    checklist[step.id] = {
+      status: $(`#${p}_status`).value,
+      time: $(`#${p}_time`).value,
+      notes: $(`#${p}_notes`).value,
+    };
+  });
+
+  const iterations = [];
+  const rows = $(`#${def.id}_iterations_body`)?.querySelectorAll("tr") || [];
+  rows.forEach((tr, idx) => {
+    iterations.push({
+      iteration: Number($(`#${def.id}_iter_${idx}_iteration`)?.value) || 1,
+      fix: $(`#${def.id}_iter_${idx}_fix`)?.value || "",
+      fix_count: Number($(`#${def.id}_iter_${idx}_fix_count`)?.value) || 0,
+      sent_to_zo: $(`#${def.id}_iter_${idx}_sent`)?.value || "",
+      completed_by_zo: $(`#${def.id}_iter_${idx}_completed`)?.value || "",
+    });
+  });
+
+  return { checklist, iterations, notes: $(`#${def.id}_notes`).value };
 }
 
 function collectQuantityGroup(prefix, fields) {
@@ -342,7 +504,10 @@ function collectDefinedProject(def) {
 function collectFormData() {
   const projects = {};
   PROJECT_DEFS.forEach(def => {
-    if (def.defined) {
+    if (!def.defined) return;
+    if (isInstallationsProject(def)) {
+      projects[def.id] = collectInstallationsProject(def);
+    } else {
       projects[def.id] = collectDefinedProject(def);
     }
   });

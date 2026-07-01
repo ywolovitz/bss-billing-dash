@@ -47,7 +47,7 @@
 <footer class="foot">Values, timestamps and statuses are set on the configuration page and published via <code>data.json</code>.</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="items.js"></script>
+<script src="items.js?v=4"></script>
 <script>
 const $ = (sel, root=document) => root.querySelector(sel);
 const el = (tag, cls, html) => {
@@ -68,30 +68,16 @@ function badge(status) {
   return `<span class="badge ${m.className}">${m.emoji} ${m.label}</span>`;
 }
 
-function rowStatusCell(projectData, row) {
-  const bucket = row.kind === "step" ? projectData.steps : projectData.mappings;
-  const item = bucket?.[row.id] || emptyStep();
-  return badge(item.status);
-}
-
 function noteBadge(title) {
   const tip = title ? ` title="${escapeHtml(title)}"` : "";
   return `<span class="badge badge-note"${tip}>📝 Note</span>`;
 }
 
-function rowNotesCell(item) {
+function rowNotesCellFromItem(item) {
   if (item.notes && item.notes.trim()) {
     return `<div class="note-cell">${noteBadge(item.notes)}<span class="row-note">${escapeHtml(item.notes)}</span></div>`;
   }
   return `<span class="muted">—</span>`;
-}
-
-function projectHasNotes(data) {
-  if ((data.notes || "").trim()) return true;
-  const buckets = [data.steps, data.mappings];
-  return buckets.some(bucket =>
-    bucket && Object.values(bucket).some(item => (item.notes || "").trim())
-  );
 }
 
 function buildSummary(projects) {
@@ -128,6 +114,103 @@ function buildProjectProgress(projects) {
   });
 }
 
+function renderStandardProjectBody(data) {
+  let bodyHtml = `
+    <table class="checklist-table checklist-table-inner">
+      <thead><tr><th class="step-col">Step</th><th>Status</th><th>Time</th><th class="notes-col">Notes</th></tr></thead>
+      <tbody>
+  `;
+
+  CHECKLIST_ROWS.forEach(row => {
+    const item = (row.kind === "step" ? data.steps : data.mappings)?.[row.id] || emptyStep();
+    bodyHtml += `<tr>
+      <td class="step-col">${escapeHtml(row.label)}</td>
+      <td>${badge(item.status)}</td>
+      <td>${item.time ? escapeHtml(item.time) : '<span class="muted">—</span>'}</td>
+      <td class="notes-col">${rowNotesCellFromItem(item)}</td>
+    </tr>`;
+  });
+
+  bodyHtml += `</tbody></table>`;
+
+  QUANTITY_GROUPS.forEach(group => {
+    const values = data.quantities?.[group.id] || {};
+    bodyHtml += `<details class="checklist-qty-group">
+      <summary>${escapeHtml(group.label)}</summary>
+      <div class="metric-grid">`;
+    group.fields.forEach(f => {
+      const v = values[f.key] !== undefined ? values[f.key] : "—";
+      bodyHtml += `<div class="metric"><span class="m-label">${escapeHtml(f.label)}</span><span class="m-val">${v}</span></div>`;
+    });
+    bodyHtml += `</div></details>`;
+  });
+
+  const projectNoteText = (data.notes || "").trim();
+  bodyHtml += `
+    <div class="project-notes-block">
+      <div class="project-notes-label">
+        Project notes
+        ${projectNoteText ? noteBadge(projectNoteText) : ""}
+      </div>
+      <div class="project-notes-body${projectNoteText ? "" : " empty"}">${projectNoteText ? escapeHtml(projectNoteText) : "No notes added."}</div>
+    </div>`;
+  return bodyHtml;
+}
+
+function renderInstallationsProjectBody(data) {
+  let bodyHtml = `
+    <table class="checklist-table checklist-table-inner">
+      <thead><tr><th class="step-col">Step</th><th>Status</th><th>Time</th><th class="notes-col">Notes</th></tr></thead>
+      <tbody>
+  `;
+
+  INSTALLATIONS_CHECKLIST_DEFS.forEach(step => {
+    const item = data.checklist?.[step.id] || emptyStep();
+    bodyHtml += `<tr>
+      <td class="step-col">${escapeHtml(step.label)}</td>
+      <td>${badge(item.status)}</td>
+      <td>${item.time ? escapeHtml(item.time) : '<span class="muted">—</span>'}</td>
+      <td class="notes-col">${rowNotesCellFromItem(item)}</td>
+    </tr>`;
+  });
+
+  bodyHtml += `</tbody></table>`;
+
+  const iterations = data.iterations || [];
+  bodyHtml += `<div class="iterations-wrap">
+    <div class="iterations-label">Check &amp; fix iterations</div>`;
+  if (iterations.length === 0) {
+    bodyHtml += `<p class="muted iterations-empty">No fix rows recorded yet.</p>`;
+  } else {
+    bodyHtml += `<table class="checklist-table iterations-table">
+      <thead><tr>
+        <th>Iteration</th><th>Fix</th><th>Number of Fixes</th><th>Sent to ZO</th><th>Completed by ZO</th>
+      </tr></thead><tbody>`;
+    iterations.forEach(row => {
+      bodyHtml += `<tr>
+        <td>${row.iteration}</td>
+        <td>${row.fix ? escapeHtml(row.fix) : '<span class="muted">—</span>'}</td>
+        <td>${row.fix_count !== undefined && row.fix_count !== "" ? row.fix_count : '<span class="muted">—</span>'}</td>
+        <td>${row.sent_to_zo ? escapeHtml(row.sent_to_zo) : '<span class="muted">—</span>'}</td>
+        <td>${row.completed_by_zo ? escapeHtml(row.completed_by_zo) : '<span class="muted">—</span>'}</td>
+      </tr>`;
+    });
+    bodyHtml += `</tbody></table>`;
+  }
+  bodyHtml += `</div>`;
+
+  const projectNoteText = (data.notes || "").trim();
+  bodyHtml += `
+    <div class="project-notes-block">
+      <div class="project-notes-label">
+        Notes
+        ${projectNoteText ? noteBadge(projectNoteText) : ""}
+      </div>
+      <div class="project-notes-body${projectNoteText ? "" : " empty"}">${projectNoteText ? escapeHtml(projectNoteText) : "No notes added."}</div>
+    </div>`;
+  return bodyHtml;
+}
+
 function buildChecklist(projects) {
   const container = $("#checklistProjects");
   container.innerHTML = "";
@@ -151,48 +234,12 @@ function buildChecklist(projects) {
       return;
     }
 
-    const data = projects[def.id] || emptyDefinedProject();
-    const hasNotes = projectHasNotes(data);
+    const data = getProjectData(def, projects);
+    const hasNotes = projectHasNotes(data, def);
     const barTone = projectBarTone(def, data);
-    let bodyHtml = `
-      <table class="checklist-table checklist-table-inner">
-        <thead><tr><th class="step-col">Step</th><th>Status</th><th>Time</th><th class="notes-col">Notes</th></tr></thead>
-        <tbody>
-    `;
-
-    CHECKLIST_ROWS.forEach(row => {
-      const item = (row.kind === "step" ? data.steps : data.mappings)?.[row.id] || emptyStep();
-      bodyHtml += `<tr>
-        <td class="step-col">${escapeHtml(row.label)}</td>
-        <td>${rowStatusCell(data, row)}</td>
-        <td>${item.time ? escapeHtml(item.time) : '<span class="muted">—</span>'}</td>
-        <td class="notes-col">${rowNotesCell(item)}</td>
-      </tr>`;
-    });
-
-    bodyHtml += `</tbody></table>`;
-
-    QUANTITY_GROUPS.forEach(group => {
-      const values = data.quantities?.[group.id] || {};
-      bodyHtml += `<details class="checklist-qty-group">
-        <summary>${escapeHtml(group.label)}</summary>
-        <div class="metric-grid">`;
-      group.fields.forEach(f => {
-        const v = values[f.key] !== undefined ? values[f.key] : "—";
-        bodyHtml += `<div class="metric"><span class="m-label">${escapeHtml(f.label)}</span><span class="m-val">${v}</span></div>`;
-      });
-      bodyHtml += `</div></details>`;
-    });
-
-    const projectNoteText = (data.notes || "").trim();
-    bodyHtml += `
-      <div class="project-notes-block">
-        <div class="project-notes-label">
-          Project notes
-          ${projectNoteText ? noteBadge(projectNoteText) : ""}
-        </div>
-        <div class="project-notes-body${projectNoteText ? "" : " empty"}">${projectNoteText ? escapeHtml(projectNoteText) : "No notes added."}</div>
-      </div>`;
+    const bodyHtml = isInstallationsProject(def)
+      ? renderInstallationsProjectBody(data)
+      : renderStandardProjectBody(data);
 
     details.innerHTML = `
       <summary class="checklist-project-summary">

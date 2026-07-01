@@ -191,6 +191,29 @@ a { color: var(--pink); }
 .progress-bar-fill.bar-undefined {
   background: #C9C5D6;
 }
+.progress-bar-fill.bar-in-progress {
+  background: linear-gradient(90deg, #1565a8, #3d9ee8);
+}
+.ppt-pct.bar-in-progress { color: #1565a8; }
+.cps-pct.bar-in-progress { color: #1565a8; }
+.iterations-wrap {
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.iterations-label {
+  padding: 8px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pink-dark);
+  background: var(--pink-tint);
+  border-bottom: 1px solid var(--border);
+}
+.iterations-table { margin: 0; }
+.iterations-empty { padding: 12px 14px; margin: 0; font-size: 0.85rem; }
 
 /* ---------- Per-project progress row ---------- */
 .project-progress-row {
@@ -551,6 +574,7 @@ details.checklist-qty-group .metric-grid {
 .status-pending{ color: var(--amber); background: var(--amber-tint); }
 .status-issue  { color: var(--red);   background: var(--red-tint); }
 .status-na     { color: var(--muted); background: #EEEAF0; }
+.status-in-progress { color: #1565a8; background: #e3f2fc; }
 
 .time-line {
   font-size: 0.85rem;

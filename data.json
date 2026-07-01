@@ -171,6 +171,17 @@
         }
       },
       "notes": ""
+    },
+    "installations": {
+      "checklist": {
+        "file_received": { "status": "pending", "time": "", "notes": "" },
+        "fixes_complete": { "status": "pending", "time": "", "notes": "" },
+        "region_mapping": { "status": "pending", "time": "", "notes": "" },
+        "isp_mapping": { "status": "pending", "time": "", "notes": "" },
+        "clean_files_dropbox": { "status": "pending", "time": "", "notes": "" }
+      },
+      "iterations": [],
+      "notes": ""
     }
   }
 }

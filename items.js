@@ -19,7 +19,6 @@ const FINAL_STEP_DEFS = [
   { id: "clean_file_dropbox", label: "Clean File uploaded to Drop Box" },
 ];
 
-// Intake + fixes — shown together in the config "Checklist steps" section
 const STEP_DEFS = [...INTAKE_STEP_DEFS, ...FIX_STEP_DEFS];
 
 function allStepDefs() {
@@ -45,26 +44,36 @@ const MAPPING_DEFS = [
   { id: "regions",               label: "Region Mapping done" },
 ];
 
+const INSTALLATIONS_CHECKLIST_DEFS = [
+  { id: "file_received",       label: "File received" },
+  { id: "fixes_complete",      label: "Fixes complete" },
+  { id: "region_mapping",      label: "Region mapping" },
+  { id: "isp_mapping",         label: "ISP Mapping" },
+  { id: "clean_files_dropbox", label: "Clean files uploaded to Dropbox" },
+];
+
 const PROJECT_DEFS = [
-  { id: "core_gpon",      label: "Core-GPON",      defined: true },
-  { id: "core_ae",        label: "Core-AE",        defined: true },
-  { id: "reach_gpon",     label: "Reach-GPON",     defined: false },
-  { id: "key_gpon",       label: "Key-GPON",       defined: false },
-  { id: "installations",  label: "Installations",  defined: false },
+  { id: "core_gpon",      label: "Core-GPON",      defined: true,  type: "standard" },
+  { id: "core_ae",        label: "Core-AE",        defined: true,  type: "standard" },
+  { id: "reach_gpon",     label: "Reach-GPON",     defined: false, type: "standard" },
+  { id: "key_gpon",       label: "Key-GPON",       defined: false, type: "standard" },
+  { id: "installations",  label: "Installations",  defined: true,  type: "installations" },
 ];
 
 const STATUS_META = {
-  done:    { emoji: "\u2705", label: "Done",    className: "status-done" },
-  pending: { emoji: "\u23F3", label: "Pending", className: "status-pending" },
-  issue:   { emoji: "\u26A0\uFE0F", label: "Issue", className: "status-issue" },
-  na:      { emoji: "\u2014",  label: "N/A",     className: "status-na" },
+  done:         { emoji: "\u2705", label: "Done",         className: "status-done" },
+  in_progress:  { emoji: "\uD83D\uDD04", label: "In Progress", className: "status-in-progress" },
+  pending:      { emoji: "\u23F3", label: "Pending",      className: "status-pending" },
+  issue:        { emoji: "\u26A0\uFE0F", label: "Issue",  className: "status-issue" },
+  na:           { emoji: "\u2014",  label: "N/A",         className: "status-na" },
 };
 
 const STATUS_OPTIONS = [
-  { value: "pending", label: "\u23F3 Pending" },
-  { value: "done",    label: "\u2705 Done" },
-  { value: "issue",   label: "\u26A0\uFE0F Issue" },
-  { value: "na",      label: "\u2014 N/A" },
+  { value: "pending",     label: "\u23F3 Pending" },
+  { value: "in_progress", label: "\uD83D\uDD04 In Progress" },
+  { value: "done",        label: "\u2705 Done" },
+  { value: "issue",       label: "\u26A0\uFE0F Issue" },
+  { value: "na",          label: "\u2014 N/A" },
 ];
 
 function statusMeta(status) {
@@ -75,8 +84,24 @@ function isApplicableStatus(status) {
   return status !== "na";
 }
 
+function isInstallationsProject(def) {
+  return def.type === "installations";
+}
+
 function emptyStep() {
   return { status: "pending", time: "", notes: "" };
+}
+
+function emptyInstallationsIteration(iteration = 1) {
+  return { iteration, fix: "", fix_count: 0, sent_to_zo: "", completed_by_zo: "" };
+}
+
+function emptyInstallationsProject() {
+  return {
+    checklist: Object.fromEntries(INSTALLATIONS_CHECKLIST_DEFS.map(d => [d.id, emptyStep()])),
+    iterations: [],
+    notes: "",
+  };
 }
 
 function emptyDefinedProject() {
@@ -95,8 +120,17 @@ function emptyDefinedProject() {
   return { steps, quantities, mappings, notes: "" };
 }
 
+function getProjectData(def, projects) {
+  if (!def.defined) return null;
+  if (isInstallationsProject(def)) return projects[def.id] || emptyInstallationsProject();
+  return projects[def.id] || emptyDefinedProject();
+}
+
 function projectTrackables(projectDef) {
   if (!projectDef.defined) return [];
+  if (isInstallationsProject(projectDef)) {
+    return INSTALLATIONS_CHECKLIST_DEFS.map(s => ({ kind: "inst_check", id: s.id }));
+  }
   return [
     ...allStepDefs().map(s => ({ kind: "step", id: s.id })),
     ...MAPPING_DEFS.map(m => ({ kind: "mapping", id: m.id })),
@@ -111,18 +145,23 @@ function mappingStatus(projectData, mappingId) {
   return (projectData?.mappings?.[mappingId]?.status) || "pending";
 }
 
-function trackableStatus(projectData, trackable) {
-  return trackable.kind === "step"
-    ? stepStatus(projectData, trackable.id)
-    : mappingStatus(projectData, trackable.id);
+function installationsCheckStatus(projectData, stepId) {
+  return (projectData?.checklist?.[stepId]?.status) || "pending";
+}
+
+function trackableStatus(projectData, trackable, projectDef) {
+  if (trackable.kind === "inst_check") return installationsCheckStatus(projectData, trackable.id);
+  if (trackable.kind === "step") return stepStatus(projectData, trackable.id);
+  return mappingStatus(projectData, trackable.id);
 }
 
 function projectProgress(projectDef, projectData) {
   const trackables = projectTrackables(projectDef);
   if (trackables.length === 0) return { done: 0, total: 0, pct: 0, na: 0 };
+  const data = projectData || (isInstallationsProject(projectDef) ? emptyInstallationsProject() : emptyDefinedProject());
   let done = 0, applicable = 0, na = 0;
   trackables.forEach(t => {
-    const status = trackableStatus(projectData, t);
+    const status = trackableStatus(data, t, projectDef);
     if (!isApplicableStatus(status)) { na++; return; }
     applicable++;
     if (status === "done") done++;
@@ -139,9 +178,9 @@ function overallProgress(projects) {
   let done = 0, total = 0, pending = 0, issue = 0, na = 0;
   PROJECT_DEFS.forEach(def => {
     if (!def.defined) return;
-    const data = projects[def.id] || emptyDefinedProject();
+    const data = getProjectData(def, projects);
     projectTrackables(def).forEach(t => {
-      const status = trackableStatus(data, t);
+      const status = trackableStatus(data, t, def);
       if (!isApplicableStatus(status)) { na++; return; }
       total++;
       if (status === "done") done++;
@@ -155,24 +194,39 @@ function overallProgress(projects) {
 
 function projectBarTone(projectDef, projectData) {
   if (!projectDef.defined) return "bar-undefined";
-  const data = projectData || emptyDefinedProject();
+  const data = projectData || (isInstallationsProject(projectDef) ? emptyInstallationsProject() : emptyDefinedProject());
   let hasIssue = false;
+  let hasInProgress = false;
   let applicable = 0;
   let done = 0;
   projectTrackables(projectDef).forEach(t => {
-    const status = trackableStatus(data, t);
+    const status = trackableStatus(data, t, projectDef);
     if (!isApplicableStatus(status)) return;
     applicable++;
     if (status === "issue") hasIssue = true;
+    if (status === "in_progress") hasInProgress = true;
     if (status === "done") done++;
   });
   if (hasIssue) return "bar-issue";
   if (applicable > 0 && done === applicable) return "bar-done";
+  if (hasInProgress) return "bar-in-progress";
   if (done > 0) return "bar-progress";
   return "bar-pending";
 }
 
-// Checklist display order: intake → fixes → mappings → final step
+function projectHasNotes(data, projectDef) {
+  if (!data) return false;
+  if (isInstallationsProject(projectDef)) {
+    if ((data.notes || "").trim()) return true;
+    return Object.values(data.checklist || {}).some(item => (item.notes || "").trim());
+  }
+  if ((data.notes || "").trim()) return true;
+  const buckets = [data.steps, data.mappings];
+  return buckets.some(bucket =>
+    bucket && Object.values(bucket).some(item => (item.notes || "").trim())
+  );
+}
+
 const CHECKLIST_ROWS = [
   ...INTAKE_STEP_DEFS.map(s => ({ kind: "step", id: s.id, label: s.label })),
   ...FIX_STEP_DEFS.map(s => ({ kind: "step", id: s.id, label: s.label })),
