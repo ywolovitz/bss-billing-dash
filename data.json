@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T08:08:26.097Z",
+  "last_updated": "2026-07-01T08:24:24.121Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -120,8 +120,8 @@
           "notes": ""
         },
         "data_fixes_done": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "10:11",
           "notes": ""
         },
         "clean_file_dropbox": {
@@ -150,8 +150,8 @@
       },
       "mappings": {
         "monthly_product_codes": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "10:24",
           "notes": ""
         },
         "start_product_codes": {
@@ -160,8 +160,8 @@
           "notes": ""
         },
         "isps": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "10:22",
           "notes": ""
         },
         "regions": {
