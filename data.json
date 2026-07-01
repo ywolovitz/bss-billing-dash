@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T13:02:55.537Z",
+  "last_updated": "2026-07-01T14:17:34.933Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -180,13 +180,13 @@
           "notes": ""
         },
         "api_file_checked": {
-          "status": "in_progress",
-          "time": "",
+          "status": "done",
+          "time": "13:50",
           "notes": ""
         },
         "data_cleared": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "16:16",
           "notes": ""
         },
         "file_import_1_of_5": {
@@ -272,13 +272,13 @@
           "notes": ""
         },
         "api_file_checked": {
-          "status": "in_progress",
-          "time": "",
+          "status": "done",
+          "time": "13:50",
           "notes": ""
         },
         "data_cleared": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "16:16",
           "notes": ""
         },
         "file_imported": {
@@ -307,7 +307,7 @@
           "notes": ""
         }
       },
-      "api_check_result": "",
+      "api_check_result": "no_match",
       "value_comparison": {
         "record_count": {
           "raw": 32914,
