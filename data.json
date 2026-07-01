@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T10:51:50.845Z",
+  "last_updated": "2026-07-01T10:58:44.997Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -171,6 +171,170 @@
         }
       },
       "notes": "Downgrade orders have been excluded in the recon"
+    },
+    "reach_gpon": {
+      "checklist": {
+        "raw_file_received": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "api_file_checked": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "data_cleared": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "file_import_1_of_5": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "file_import_2_of_5": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "file_import_3_of_5": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "file_import_4_of_5": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "file_import_5_of_5": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "value_checks": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "region_mapping": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "isp_mapping": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "product_code_mapping": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        }
+      },
+      "api_check_result": "",
+      "value_comparison": {
+        "record_count": {
+          "raw": 0,
+          "bss": 0
+        },
+        "bill_isp_excl": {
+          "raw": 0,
+          "bss": 0
+        },
+        "current_period_rev": {
+          "raw": 0,
+          "bss": 0
+        },
+        "current_period_days": {
+          "raw": 0,
+          "bss": 0
+        },
+        "deferral_period_rev": {
+          "raw": 0,
+          "bss": 0
+        },
+        "deferral_period_days": {
+          "raw": 0,
+          "bss": 0
+        }
+      },
+      "notes": ""
+    },
+    "key_gpon": {
+      "checklist": {
+        "raw_file_received": {
+          "status": "done",
+          "time": "03:08",
+          "notes": ""
+        },
+        "api_file_checked": {
+          "status": "in_progress",
+          "time": "",
+          "notes": ""
+        },
+        "data_cleared": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "file_imported": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "value_checks": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "region_mapping": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "isp_mapping": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        },
+        "product_code_mapping": {
+          "status": "pending",
+          "time": "",
+          "notes": ""
+        }
+      },
+      "api_check_result": "",
+      "value_comparison": {
+        "record_count": {
+          "raw": 32914,
+          "bss": 0
+        },
+        "bill_isp_excl": {
+          "raw": 1553740.936,
+          "bss": 0
+        },
+        "current_period_rev": {
+          "raw": 1567415.166,
+          "bss": 0
+        },
+        "current_period_days": {
+          "raw": 466291,
+          "bss": 0
+        },
+        "deferral_period_rev": {
+          "raw": 875331.5731,
+          "bss": 0
+        },
+        "deferral_period_days": {
+          "raw": 263517,
+          "bss": 0
+        }
+      },
+      "notes": ""
     },
     "installations": {
       "checklist": {
