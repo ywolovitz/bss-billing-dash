@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-01T07:00:37.634Z",
+  "last_updated": "2026-07-01T07:16:12.009Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -95,8 +95,8 @@
           "notes": ""
         },
         "monthly_checks_sent": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "09:07",
           "notes": ""
         },
         "start_checks_sent": {
