@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-02T09:23:07.064Z",
+  "last_updated": "2026-07-02T10:04:11.362Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -220,8 +220,8 @@
           "notes": ""
         },
         "region_mapping": {
-          "status": "in_progress",
-          "time": "",
+          "status": "done",
+          "time": "12:02",
           "notes": ""
         },
         "isp_mapping": {
