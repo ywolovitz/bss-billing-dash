@@ -1,6 +1,6 @@
 {
   "run_label": "June 2026 Month-End Bill Run",
-  "last_updated": "2026-07-02T10:04:11.362Z",
+  "last_updated": "2026-07-02T10:40:47.620Z",
   "projects": {
     "core_gpon": {
       "steps": {
@@ -215,8 +215,8 @@
           "notes": ""
         },
         "value_checks": {
-          "status": "pending",
-          "time": "",
+          "status": "done",
+          "time": "12:40",
           "notes": ""
         },
         "region_mapping": {
@@ -239,27 +239,27 @@
       "value_comparison": {
         "record_count": {
           "raw": 949374,
-          "bss": 1048576
+          "bss": 949369
         },
         "bill_isp_excl": {
           "raw": 150349664.3,
-          "bss": 201681154
+          "bss": 150349702.5
         },
         "current_period_rev": {
           "raw": 150329181.8,
-          "bss": 107869126.3
+          "bss": 150329265.8
         },
         "current_period_days": {
           "raw": 15597049,
-          "bss": 11321569
+          "bss": 15597047
         },
         "deferral_period_rev": {
           "raw": 60704115.12,
-          "bss": 45439808.05
+          "bss": 60703434.53
         },
         "deferral_period_days": {
           "raw": 6418977,
-          "bss": 4802854
+          "bss": 6418829
         }
       },
       "notes": ""
